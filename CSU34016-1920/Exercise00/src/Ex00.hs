@@ -1,4 +1,4 @@
--- Name: An On,  Username: anon
+-- Name: Jack Gilbride,  Username: gilbridj
 module Ex00 where
 
-hello =  "I am currently a failing exercise"
+hello =  "Hello World :-)"
