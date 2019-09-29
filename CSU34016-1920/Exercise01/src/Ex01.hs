@@ -1,4 +1,4 @@
--- Name: An On,  Username: anon
+-- Name: Jack Gilbride,  Username: gilbridj
 module Ex01 where
 import Data.Char (toUpper) -- needed for Part 1
 
