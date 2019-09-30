@@ -1,4 +1,4 @@
-# CourseWork for CSU34016 2019-20, Introduction to Functional Programming.
+# CourseWork for CSU34016 2019-20
 
 Repository of college assignments created to introduce us to functional programming through Haskell.
 
