@@ -1,4 +1,4 @@
--- Name: Jack Gilbride,  Username: gilbridj
+-- Name: Jack Joseph Gilbride,  Username: gilbridj
 module Ex01 where
 import Data.Char (toUpper) -- needed for Part 1
 
@@ -10,7 +10,6 @@ Function 'toUpper :: Char -> Char' converts a character to uppercase
 if it is lowercase. All other characters are unchanged
 
 -}
---raise _ = error "raise not yet implemented"
 raise [] = []
 raise (x:xs) = (toUpper x):(raise xs) 
 
@@ -20,7 +19,6 @@ Write a function 'nth' that returns the nth element of a list
 
 -}
 nth :: Int -> [a] -> a
---nth _ _ = error "raise not yet implemented"
 nth 1 (x:xs) = x
 nth y (x:xs) = nth (y-1) xs
 
@@ -31,4 +29,6 @@ and reports the length of the prefix they have in common.
 
 -}
 commonLen :: Eq a => [a] -> [a] -> Int
-commonLen _ _ = error "commonLen not yet implemented"
+--commonLen _ _ = error "commonLen not yet implemented"
+commonLen (x:xs) (y:ys) = if x == y then (commonLen xs ys)+1 else 0
+commonLen _ _ = 0
