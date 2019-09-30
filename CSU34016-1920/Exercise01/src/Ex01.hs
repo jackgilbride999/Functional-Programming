@@ -20,9 +20,9 @@ Write a function 'nth' that returns the nth element of a list
 
 -}
 nth :: Int -> [a] -> a
-nth _ _ = error "raise not yet implemented"
---nth 0 (x:xs) = x
---nth y (x:xs) = nth y-1 xs
+--nth _ _ = error "raise not yet implemented"
+nth 1 (x:xs) = x
+nth y (x:xs) = nth (y-1) xs
 
 {- Part 3
 
