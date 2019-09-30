@@ -10,7 +10,9 @@ Function 'toUpper :: Char -> Char' converts a character to uppercase
 if it is lowercase. All other characters are unchanged
 
 -}
-raise _ = error "raise not yet implemented"
+--raise _ = error "raise not yet implemented"
+raise [] = []
+raise (x:xs) = (toUpper x):(raise xs) 
 
 {- Part 2
 
@@ -19,6 +21,8 @@ Write a function 'nth' that returns the nth element of a list
 -}
 nth :: Int -> [a] -> a
 nth _ _ = error "raise not yet implemented"
+--nth 0 (x:xs) = x
+--nth y (x:xs) = nth y-1 xs
 
 {- Part 3
 
