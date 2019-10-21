@@ -1,6 +1,7 @@
 {- gilbridj Jack Joseph Gilbride -}
 module Ex02 where
 import Data.List ((\\))
+import Data.Maybe
 
 -- Datatypes -------------------------------------------------------------------
 
@@ -49,9 +50,18 @@ v42 = Val 42 ; j42 = Just v42
   -- (2) the expression contains a variable not in the dictionary.
 
 eval :: EDict -> Expr -> Maybe Double
---eval d (Val x) = Just x
---eval d (Add x y) = (eval d x) + (eval d y)
-eval d e = Just 1e-99
+eval d (Val x) = Just x
+eval d (Var x) = if(isJust(find d x)) then (find d x) else Nothing
+eval d (Add x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)+fromJust(eval d y)) else Nothing
+eval d (Sub x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)-fromJust(eval d y)) else Nothing
+eval d (Mul x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)*fromJust(eval d y)) else Nothing
+eval d (Dvd x (Val 0)) = Nothing
+eval d (Dvd x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)/fromJust(eval d y)) else Nothing
+-- The intended meaning of Def x e1 e2 is; x is in scope in e2, but not in e1
+-- computer value if e1, and assign value to x, then evaluate e2 as overall result
+
+eval d (Def x e1 e2) = if isJust(eval d e1) then eval (define d x (fromJust(eval d e1)) ) e2 else Nothing
+eval d e = Nothing
 
 -- Part 2 : Expression Laws -- (15 test marks, worth 15 Exercise Marks) --------
 
