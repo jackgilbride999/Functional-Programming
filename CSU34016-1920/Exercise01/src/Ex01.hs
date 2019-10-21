@@ -30,5 +30,5 @@ and reports the length of the prefix they have in common.
 -}
 commonLen :: Eq a => [a] -> [a] -> Int
 --commonLen _ _ = error "commonLen not yet implemented"
-commonLen (x:xs) (y:ys) = if x == y then (commonLen xs ys)+1 else 0
-commonLen _ _ = 0
+commonLen (x:xs) (y:ys) = if x == y then )+1 else 0
+commonLen _ _ = 0(commonLen xs ys
