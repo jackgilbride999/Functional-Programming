@@ -11,6 +11,8 @@ import Data.Maybe
 type Id = String
 
 -- Expr data type
+-- The intended meaning of Def var x y is; var is in scope in y, but not in x
+-- computer value if x, and assign value to var, then evaluate y as overall result
 data Expr
   = Val Double
   | Add Expr Expr
@@ -51,17 +53,21 @@ v42 = Val 42 ; j42 = Just v42
 
 eval :: EDict -> Expr -> Maybe Double
 eval d (Val x) = Just x
-eval d (Var x) = if(isJust(find d x)) then (find d x) else Nothing
-eval d (Add x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)+fromJust(eval d y)) else Nothing
-eval d (Sub x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)-fromJust(eval d y)) else Nothing
-eval d (Mul x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)*fromJust(eval d y)) else Nothing
-eval d (Dvd x (Val 0)) = Nothing
-eval d (Dvd x y) = if (isJust(eval d x)) && (isJust(eval d y)) then Just (fromJust(eval d x)/fromJust(eval d y)) else Nothing
--- The intended meaning of Def x e1 e2 is; x is in scope in e2, but not in e1
--- computer value if e1, and assign value to x, then evaluate e2 as overall result
-
-eval d (Def x e1 e2) = if isJust(eval d e1) then eval (define d x (fromJust(eval d e1)) ) e2 else Nothing
+eval d (Var x) = find d x
+eval d (Add x y) = evalOp d (+) x y
+eval d (Sub x y) = evalOp d (-) x y
+eval d (Mul x y) = evalOp d (*) x y
+eval d (Dvd x (Val 0)) = Nothing      -- catch error case: division by zero
+eval d (Dvd x y) = evalOp d (/) x y
+eval d (Def var x y) = case eval d x of 
+                  Nothing -> Nothing
+                  Just k -> eval (define d var k) y
 eval d e = Nothing
+
+evalOp d op x y = case (eval d x, eval d y) of 
+                  (Just m, Just n) -> Just (op m n)
+                  _ -> Nothing
+
 
 -- Part 2 : Expression Laws -- (15 test marks, worth 15 Exercise Marks) --------
 
