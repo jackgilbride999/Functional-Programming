@@ -1,4 +1,4 @@
-{- butrfeld Andrew Butterfield -}
+{- gilbridj Jack Joseph Gilbride -}
 module Ex03 where
 import Data.List ((\\))
 
@@ -7,15 +7,29 @@ import Data.List ((\\))
 -- do not change anything in this section !
 
 -- Binary Tree
+{-  
+    Binary tree data type. Takes two arguments of type a and b. Is either a leaf, 
+    or a branch. A branch holds a left subtree, a key of type a, a value of type b 
+    and a right subtree.
+-} 
 data BT a b
   = Leaf
   | Branch (BT a b) a b (BT a b)
   deriving (Eq, Show)
 
 -- association list
+{-
+  List of key value pairs, where keys are of type a and values are of type b.
+-}
 type Assoc a b = [(a,b)]
 
 -- lookup binary (search) tree
+{-
+  Function to search binary tree. Takes a BST (where keys are of type a1 and 
+  values are of type a) along with a value of type a1. Returns a Maybe a, which
+  is Just a if the value is found, and Nothing otherwise. a1 is restricted to
+  be an ordered type so we can compare keys.
+-}
 lkpBST :: Ord a1 => BT a1 a -> a1 -> Maybe a
 lkpBST Leaf _  =  Nothing
 lkpBST (Branch left k d right) k'
