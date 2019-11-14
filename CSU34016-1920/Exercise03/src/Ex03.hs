@@ -46,7 +46,11 @@ lkpBST (Branch left k d right) k'
     a is retricted to an orderable type so that it can be compared.
 -}
 insBST :: Ord a => a -> b -> BT a b -> BT a b
-insBST _ _ _  =  error "insBST not yet implmented"
+insBST k' d' Leaf = Branch Leaf k' d' Leaf 
+insBST k' d' (Branch left k d right)
+ | k' < k = Branch (insBST k' d' left) k d right  -- if key is less than tree's key, recurse on left subtree and return
+ | k' > k = Branch left k d (insBST k' d' right)  -- if key is greater than tree's key, recurse on right subtree and return
+ | otherwise = Branch left k' d' right            -- otherwise, put new key value pair in current branch and return
 
 -- Coding Part 2 (6 Marks)
 
