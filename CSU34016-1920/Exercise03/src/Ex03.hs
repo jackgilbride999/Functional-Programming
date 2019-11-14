@@ -72,4 +72,6 @@ assoc2bst ((a, b):xs) = insBST a b (assoc2bst xs)   -- otherwise, run recursivel
   c and values of type e. c is retricted to an orderable type so that it can be compared.
 -}
 bst2assoc :: Ord c =>  BT c e -> Assoc c e
-bst2assoc _ = error "bst2assoc not yet implemented"
+
+bst2assoc Leaf =  []                                                                  -- if passed a leaf, return the equivalent list which is empty
+bst2assoc (Branch left k d right) = ((bst2assoc left) ++ (k,d):(bst2assoc right))     -- return ordered list from left ++ current pair ++ ordered list from right
