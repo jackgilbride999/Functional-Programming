@@ -4,14 +4,14 @@ Repository of college assignments created to introduce us to functional programm
 
 ## Exercise00
 
-Exercise to introduce us to Haskell. Involved the installing stack onto our machines before compilng and editing Haskell code to pass a simple test.
+Simple introduction task to Haskell. Install stack, then compile and edit Haskell code to pass a simple test.
 
 ## Exercise01
 
-Our introduction to functions in Haskell. Our tasks were to implement the functions:
-- "Raise", which converts a string to uppercase
-- "nth", which returns the nth element of a list
-- "commonLen", which compares two sequences and reports the length of the prefix they have in common
+Introduction to functions in Haskell. Implement the following functions:
+- `Raise`, to convert a string to uppercase
+- `nth`, to return the nth element of a list
+- `commonLen`, to compare two sequences and report the length of the prefix they have in common
 
 ## Exercise02
 
@@ -28,19 +28,19 @@ data Expr
   deriving (Eq, Show)
 }
 ```
-along with a dictionary for values 'type Dict k d  =  [(k,d)]', a define function and a find function for the dictionary:
+along with a dictionary for values `type Dict k d  =  [(k,d)]`, a define function and a find function for the dictionary:
 - Implement an eval function for a value, variable, addition, subtraction, multiplication, division and definition.
 - Implement the following laws: 
-    - x + y = y + z
-    - x + (y + z) = (x + y) + z
-    - x - (y + z) = (x - y) - z
-    - (x + y)\*(x - y) = x*x - y*y
+    - `x + y = y + z`
+    - `x + (y + z) = (x + y) + z`
+    - `x - (y + z) = (x - y) - z`
+    - `(x + y)\*(x - y) = x*x - y*y`
 
 ## Exercise03
 
 Given a binary tree data type, association list binary type and lookup BST function:
-- implement insert BST function
-- implement function to convert association list to BST
-- implement function to convert BST to association list 
+- Implement insert BST function
+- Implement function to convert association list to BST
+- Implement function to convert BST to association list 
 
-Use proof checking tool prfchk to prove the threorem 'product ((1:2:[])++(3:4:[])) == 24'.
+Use proof checking tool prfchk to prove the threorem `product ((1:2:[])++(3:4:[])) == 24`.
