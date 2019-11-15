@@ -6,10 +6,25 @@ THEOREM prodcat
 
        product ((1:2:[])++(3:4:[])) == 24
 
-STRATEGY ReduceAll
+STRATEGY ReduceLHS
 
-2+2
+product ((1:(2:([])))++(3:(4:([]))))
+ = DEF ++.2
+product (1:((2:([]))++(3:(4:([])))))
+ = DEF product.2
+1 * product ((2:([]))++(3:(4:([]))))
+ = DEF ++.2
+1 * product (2:(([])++(3:(4:([])))))
+ = DEF ++.1
+1 * product (2:(3:(4:([]))))
+ = DEF product.2
+1 * (2 * product (3:(4:([]))))
+ = DEF product.2
+1 * (2 * (3 * product (4:([]))))
+ = DEF product.2
+1 * (2 * (3 * (4 * product ([]))))
+ = DEF product.1
+1 * (2 * (3 * (4 * 1)))
  = SIMP
-1
-
+24
 QED prodcat
