@@ -36,19 +36,30 @@
 
     lookup :: BinTree -> Int -> Maybe String
 
-    lookup BNil = Nothing
+    lookup BNil x = Nothing
 
     lookup (BOne i s) x
-        | x == i = Just x
+        | x == i = Just s
         | otherwise = Nothing
 
     lookup (BTwo left i s right) x
         | x < i = lookup left x
         | x > i = lookup right x
-        | otherwise = Just x        -- x == i so return x
+        | otherwise = Just s        -- x == i so return x
 
 {-
     (c) Add in generic error handling for the lookup function above, using monads, ensuring it is now total, and giving back a useful error message.
         Note that this will also require changing the type (again) of the lookup function, and your answer should give this revised type.
 -}
     lookup :: Monad m => BinTree -> Int -> m String
+    
+    lookup BNil x = fail "Lookup reached an empty binary tree node. No value was found for the key"
+
+    lookup (BOne i s) x 
+        | x == i = return s
+        | otherwise = fail "Lookup reached a leaf which does not contain the specified key. No value was found for the key"
+
+    lookup (BTwo left i s right) x
+        | x < i = lookup left x
+        | x > i = lookup right x
+        | otherwise = return s
