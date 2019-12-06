@@ -48,3 +48,15 @@
                         if (rootN < 8)                                                      -- we haven't reached the max length of the root so keep appending
                             then (toUpper x) : helperDOS xs (rootN + 1) pastDot extN
                         else helperDOS xs rootN pastDot extN                                -- we have reached the max length of the root, don't append but call recursively as we still have to append the dot and the extension
+
+{-
+    (d) Write a program that prompts a user for a filename and then uses toDOS to convert the filename to DOS 8+3 format,
+        opens that file, reads its contents, maps all its characters to lowercase, and outputs the file result to LOWER.OUT
+-}
+
+    lowerDOS
+        = do    putStr "Please enter the extended filename whose contents you want to convert to LOWER.OUT"
+                filename <- getLine
+                dosfilename <- toDOS filename
+                contents <- readFile dosfilename
+                writefile "LOWER.OUT" (map toLower contents)
