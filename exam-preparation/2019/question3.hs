@@ -37,9 +37,14 @@
     toDOS (x:xs) = helperDOS (x:xs) 0 false 0 
 
     helperDOS :: String -> Int -> Bool -> Int -> String
-    helperDOS [] _ _ _ = [] -- an empty string converts to an empty string
+    helperDOS [] _ _ _ = []                                                                 -- an empty string converts to an empty string
     helperDOS (x:xs) rootN pastDot extN =
-        | pastDot = if (extN < 3) then ((toUpper x) : helperDOS xs rootN pastDot (extN+1)) else []    -- we have passed the dot, if the extension length is <3, continue appending, otherwise, ignore the rest of inpput
-        | otherwise = if (x = '.') then x : (helperDOS xs rootN True extN)  -- if we reach the dot, set dotPassed to true and continue appenfine
-                        else if (rootN < 8) then (toUpper x) : helperDOS xs (rootN + 1) pastDot extN -- if we haven't passed the dot and the root lenght is <8, continue appending
-                            else helperDOS xs rootN pastDot extN                                     -- otherwise do not append but keep going as we must eventually append the dot and extension   
+        | pastDot = if (extN < 3)                                                           -- we have passed the dot
+                        then ((toUpper x) : helperDOS xs rootN pastDot (extN+1))            -- the we are currently less than 3 characters into the extension, so continue appending
+                    else []                                                                 -- we have appended three characters to the extension, nothing left to do
+        | otherwise = if (x = '.')                                                          -- we have reached the dot
+                        then x : (helperDOS xs rootN True extN)                             -- take note that we have passed the dot and continue appending
+                    else                                                                    -- we haven't reached the dot, so are still in the root
+                        if (rootN < 8)                                                      -- we haven't reached the max length of the root so keep appending
+                            then (toUpper x) : helperDOS xs (rootN + 1) pastDot extN
+                        else helperDOS xs rootN pastDot extN                                -- we have reached the max length of the root, don't append but call recursively as we still have to append the dot and the extension
