@@ -60,6 +60,7 @@
         | otherwise = fail "Lookup reached a leaf which does not contain the specified key. No value was found for the key"
 
     lookup (BTwo left i s right) x
+        | x == i return s
         | x < i = lookup left x
         | x > i = lookup right x
-        | otherwise = return s
+        | otherwise = fail "Comparison failed for a BTwo node." -- We should never reach this step!
