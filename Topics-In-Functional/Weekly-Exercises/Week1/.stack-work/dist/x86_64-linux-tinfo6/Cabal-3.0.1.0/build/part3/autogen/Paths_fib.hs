@@ -30,7 +30,7 @@ version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/.stack-work/install/x86_64-linux-tinfo6/a1315e10e9c25fd86f52be9dc996c7aeaa5d2fba6b0a2cbb5ab9162530d43e30/8.8.4/bin"
-libdir     = "/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/.stack-work/install/x86_64-linux-tinfo6/a1315e10e9c25fd86f52be9dc996c7aeaa5d2fba6b0a2cbb5ab9162530d43e30/8.8.4/lib/x86_64-linux-ghc-8.8.4/fib-0.1.0.0-1jh7FYLhuitIoAZkIm0yYX-ex3"
+libdir     = "/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/.stack-work/install/x86_64-linux-tinfo6/a1315e10e9c25fd86f52be9dc996c7aeaa5d2fba6b0a2cbb5ab9162530d43e30/8.8.4/lib/x86_64-linux-ghc-8.8.4/fib-0.1.0.0-BZUGYkTDfooEOPjKZAzss-part3"
 dynlibdir  = "/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/.stack-work/install/x86_64-linux-tinfo6/a1315e10e9c25fd86f52be9dc996c7aeaa5d2fba6b0a2cbb5ab9162530d43e30/8.8.4/lib/x86_64-linux-ghc-8.8.4"
 datadir    = "/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/.stack-work/install/x86_64-linux-tinfo6/a1315e10e9c25fd86f52be9dc996c7aeaa5d2fba6b0a2cbb5ab9162530d43e30/8.8.4/share/x86_64-linux-ghc-8.8.4/fib-0.1.0.0"
 libexecdir = "/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/.stack-work/install/x86_64-linux-tinfo6/a1315e10e9c25fd86f52be9dc996c7aeaa5d2fba6b0a2cbb5ab9162530d43e30/8.8.4/libexec/x86_64-linux-ghc-8.8.4/fib-0.1.0.0"

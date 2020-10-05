@@ -2,6 +2,10 @@
   hash: 02c1a020ffbec64f5503d0ee3fb9bccb1554d702659b24fc2eec85ea4e01879c
   size: 43
   modtime: 1601929014
+/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/src/part3.hs:
+  hash: a03d7f667a9991f693292cefd49cf7dc04346c42dbdbe5a5dc59937ea308ef49
+  size: 157
+  modtime: 1601930033
 /home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/src/Lib.hs:
   hash: 11d6d255cb397fa45980eb516ea685146565d9de2108c4eea356ea41db8364be
   size: 88
@@ -18,7 +22,3 @@
   hash: 0de0b3b9630d5b1aea7793cddcb46b3787807cf47fa1b80052768282003e694c
   size: 2585
   modtime: 1601929945
-/home/jackgilbride/College/Functional-Programming/Topics-In-Functional/Weekly-Exercises/Week1/src/part1.hs:
-  hash: bcd9f1652d8287bdc5a769ce9a29d7b2e8d88cdf87252a2d79ae8b061d5b16df
-  size: 552
-  modtime: 1601929692

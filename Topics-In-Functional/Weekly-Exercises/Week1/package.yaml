@@ -39,6 +39,8 @@ executables:
     main: ex5.hs
   part1:
     main: part1.hs
+  part3:
+    main: part3.hs
 
 
 # GThese options are global (because they are not indented into an 'executables' stanza)

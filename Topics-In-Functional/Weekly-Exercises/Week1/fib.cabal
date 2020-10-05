@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c171c7812286757f5d2073592f05f98507b1268dd5a057379a48eeb138745823
+-- hash: 5538addd61ac76a93da6cc3f742caaeb0b8c8e15b0fe86c76bacfb3eefe49e76
 
 name:           fib
 version:        0.1.0.0
@@ -105,6 +105,19 @@ executable ex5
 
 executable part1
   main-is: part1.hs
+  other-modules:
+      Lib
+      Paths_fib
+  hs-source-dirs:
+      src
+  ghc-options: -threaded -rtsopts
+  build-depends:
+      base >=4.7 && <5
+    , parallel
+  default-language: Haskell2010
+
+executable part3
+  main-is: part3.hs
   other-modules:
       Lib
       Paths_fib
