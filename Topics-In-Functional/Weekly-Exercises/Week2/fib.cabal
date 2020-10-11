@@ -1,0 +1,39 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 31413d340adb25491a7fb208bfcbb88d25c8277df720b8fa92ec1572ce32c3f8
+
+name:           fib
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/gdstrong/fib#readme>
+homepage:       https://github.com/gdstrong/fib#readme
+bug-reports:    https://github.com/gdstrong/fib/issues
+author:         Glenn Strong
+maintainer:     Glenn.Strong@scss.tcd.ie
+copyright:      (c) 2020 Glenn Strong
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/gdstrong/fib
+
+executable week2
+  main-is: week2.hs
+  other-modules:
+      Lib
+      Paths_fib
+  hs-source-dirs:
+      src
+  ghc-options: -threaded -rtsopts
+  build-depends:
+      base >=4.7 && <5
+    , parallel
+  default-language: Haskell2010
