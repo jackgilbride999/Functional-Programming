@@ -24,4 +24,26 @@ instance Monad (List) where
      -- (>>=) :: List a -> (a -> List b) -> List b
       Nil >>= f = Nil
       (Cons x xs) >>= f = f x
-      
+
+{-
+     Three Monad Laws:
+
+     Law 1: Left Identity
+     return x >>= f behaves the same as f x
+          return x >>= f
+          = pure x >>= f           -- as return = pure by default
+          = Cons x Nil >>= f       -- by the above definition for pure
+          = f x                    -- by the second pattern match in the above definition for (>>=)
+          Q.E.D.
+
+     Law 2: Right Identity
+     m >>= return behaves the same as m
+          m >>= return
+          = m >>= pure             -- as return = pure by default
+          = 
+
+     Law 3: Associativity 
+     (m >>= f) >>= g behaves the same as
+          m >>= (fun x -> f x >>= g)     
+     
+-}
