@@ -1,5 +1,5 @@
 
-main = putStr "week3"
+main = putStr "Week 3. Call any function here."
 
 data List a = Nil | Cons a (List a)
 
@@ -52,24 +52,53 @@ instance Monad (List) where
           return x >>= f
           = pure x >>= f           -- as return = pure by default
           = Cons x Nil >>= f       -- by the above definition for pure
-          
+          = join (fmap f (Cons x Nil))
+          = join (Cons (f x) (fmap f Nil))
+          = join (Cons (f x) (Nil))
+          = cat (f x) (join Nil)
+          = cat (f x) (Nil)
+          Case 1: f x = Nil
+          = cat (Nil) Nil
+          = Nil
+          Case 2: f x = Cons y ys
+          = cat (Cons y ys) (Nil)
+          = Cons y (cat ys Nil)
+          (The above patten will continue until the list ys is fully expanded.
+           Every list ends with Nil by definition, so eventually each y will be
+           brought outside the cat into the Cons notation, and the cat function 
+           will contain the Nil from the end of ys and the other Nil, which will
+           evaluate to Nil. So the entire thing will evaluate to Cons y ys, which
+           is equal to f x as required)
 
      Law 2: Right Identity
      m >>= return behaves the same as m
           m >== return
-          
+          = join (fmap return m)
+          Case 1: m = Nil
+          = join (fmap return Nil)
+          = join (Nil)
+          = Nil
+          Case 2: m = Cons x xs
+          = join (fmap return (Cons x xs))
+          = join (Cons (return x) fmap (return xs))
+          (fmap will map return to each x in the list. Each return x will evaluate to pure x, 
+          which will evaluate to Cons x Nil. join will iterate through these sublists and join 
+          them into one single list containing all elements from the sublists. i.e., it will take
+          all the xs and return them in the list monad, which is exactly Cons x xs, which is 
+          exactly m.)
 
 
      Law 3: Associativity 
      (m >>= f) >>= g behaves the same as
-     m >>= (fun x -> f x >>= g)     
-     	(m >>= f) >>= g
-          = (f m) >>= g            -- Law 1
-          = g (f m)                -- Law 1
+     m >>= (\x -> f x >>= g)     
+          
+          (m >>= f) >>= g
+          = (join (fmap f m)) >>= g
+          = (join (fmap g (join (fmap f m))))
 
-          m >>= ((\x -> f x) >>= g)
-          = m >>= (g (\x -> f x))  -- Law 1
-          = (g (\x -> f x)) m      -- Law 1
+          m >>= (\x -> f x >>= g)
+          = join (fmap (\x -> f x >>= g) m)
+          = join (fmap (join (fmap g (\x -> f x))) m)
           
 -}
 
@@ -111,3 +140,31 @@ instance Functor (Pair a) where
      Q.E.D.
 -}
 
+{-
+instance Applicative (Pair a) where
+
+     -- pure :: b -> f b
+     pure y = P y y
+
+     -- (<*>) :: List (a -> b) -> List a -> List b
+     P x1 f <*> P x2 y = fmap f (P x2 y)
+-}
+{-
+     The attempt at giving an instance of Applicative for Pair is above, commented out to avoid a compile time error.
+
+     We can create an instance of Functor for Pair because we can create an instance of it, and an implementation for fmap, 
+     which are of the correct type. For a (Pair a b), we can say that b is the value wrapped in the Functor. Therefore (Pair a) 
+     is the instance of the Functor. fmap then, applies the function f to the wrapped value b, inside the Functor.
+
+     We cannot create an instance of Applicative for Pair because we cannot define pure. pure takes a value and returns it wrapped 
+     in the Applicative. So it needs to take (b), and return (P a b). So pure must return a Functor containing a value of type (a), 
+     but it has no indication of what type (a) is from the input. If it returned (P b b), this would confine the types in the pair, 
+     which is not how the pair was defined. We cannot encode a pure function, so we cannot create an instance of an applicative.
+
+     We could also try to encode <*>. This is possible where the first Applicative holds a function in its value (b), and the second 
+     holds the value to apply it to. However, both these applicatives may have different (a) values. The function would have to arbitrarily
+     choose whether to return a Pair with the (a) value from the first applicative or the second.
+
+     Even if we could encode an Applicative in Haskell without defining the pure function, it needs to be applied to prove the Applicative Functor 
+     Laws, as it is used in all of them. So without pure, there is no Applicative.
+-}
