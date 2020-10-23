@@ -1,0 +1,1 @@
+main = putStr "week4"

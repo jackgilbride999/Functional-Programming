@@ -1,0 +1,35 @@
+name:                week4
+version:             0.1.0.0
+github:              "jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week4"
+license:             BSD3
+author:              "Jack Gilbride"
+copyright:           "(c) 2020 Jack Gilbride"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         N/A
+
+dependencies:
+- base >= 4.7 && < 5
+- parallel
+
+
+executables:
+  week4: 
+    main: week4.hs
+
+# GThese options are global (because they are not indented into an 'executables' stanza)
+source-dirs: src
+ghc-options:
+  - -threaded
+  - -rtsopts
+
