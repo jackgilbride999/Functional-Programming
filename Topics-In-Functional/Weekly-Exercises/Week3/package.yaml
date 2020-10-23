@@ -1,10 +1,9 @@
-name:                fib
+name:                week3
 version:             0.1.0.0
-github:              "gdstrong/fib"
+github:              "jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week3"
 license:             BSD3
-author:              "Glenn Strong"
-maintainer:          "Glenn.Strong@scss.tcd.ie"
-copyright:           "(c) 2020 Glenn Strong"
+author:              "Jack Gilbride"
+copyright:           "(c) 2020 Jack Gilbride"
 
 extra-source-files:
 - README.md

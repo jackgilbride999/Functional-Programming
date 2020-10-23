@@ -1,7 +1,7 @@
 C:\Users\jackg\College\Functional-Programming\Topics-In-Functional\Weekly-Exercises\Week2\package.yaml:
-  hash: 4c7c11b8d7711717c64ce2de935de04e16db5d125bb0d0d29b2fcfbc73ef6c48
-  size: 981
-  modtime: 1602429135
+  hash: d1c8df479b036b04cec8c660c6b36c39efd2ca268e1d33385767bf9d62d3d235
+  size: 983
+  modtime: 1603475354
 C:\Users\jackg\College\Functional-Programming\Topics-In-Functional\Weekly-Exercises\Week2\README.md:
   hash: b42175b30a63cd92fa2bfb7e8c140dd993ff23890c5db5450509dbe5556b00c6
   size: 279
@@ -14,11 +14,11 @@ C:\Users\jackg\College\Functional-Programming\Topics-In-Functional\Weekly-Exerci
   hash: db4525e8bf84e3848123ab8c93c0b30969946090f4c5d48b686a3bdbfbc92017
   size: 94
   modtime: 1602100823
-C:\Users\jackg\College\Functional-Programming\Topics-In-Functional\Weekly-Exercises\Week2\fib.cabal:
-  hash: b63b8d57f49ab90d4879b16af1854f32b07c1d6a6d3259478f3f6446e9fad734
-  size: 998
-  modtime: 1602429139
 C:\Users\jackg\College\Functional-Programming\Topics-In-Functional\Weekly-Exercises\Week2\ChangeLog.md:
   hash: 4fcaf727b067cd785801ac7c3e0e74d47e86f49e47f6f0c7d2de52911f1423f3
   size: 46
   modtime: 1602100823
+C:\Users\jackg\College\Functional-Programming\Topics-In-Functional\Weekly-Exercises\Week2\week2.cabal:
+  hash: 9f66e28e5b9a270560c63a043227d486e8b00027088d30e8ec7db22b070b005b
+  size: 1134
+  modtime: 1603475365

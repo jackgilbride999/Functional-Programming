@@ -4,18 +4,17 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5538addd61ac76a93da6cc3f742caaeb0b8c8e15b0fe86c76bacfb3eefe49e76
+-- hash: 2268b709e76977640701d8b30a219f0f9f2b08d4bb7be742afe0cb3c3b5e0731
 
-name:           fib
+name:           week1
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/gdstrong/fib#readme>
-homepage:       https://github.com/gdstrong/fib#readme
-bug-reports:    https://github.com/gdstrong/fib/issues
-author:         Glenn Strong
-maintainer:     Glenn.Strong@scss.tcd.ie
-copyright:      (c) 2020 Glenn Strong
+homepage:       https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week4#readme
+bug-reports:    https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week4/issues
+author:         Jack Gilbride
+maintainer:     Jack Gilbride
+copyright:      (c) 2020 Jack Gilbride
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
@@ -23,13 +22,13 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/gdstrong/fib
+  location: https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week4
 
 executable ex1
   main-is: ex1.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
@@ -42,7 +41,7 @@ executable ex2
   main-is: ex2.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
@@ -55,7 +54,7 @@ executable ex3
   main-is: ex3.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
@@ -68,7 +67,7 @@ executable ex4
   main-is: ex4.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
@@ -81,7 +80,7 @@ executable ex4b
   main-is: ex4b.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
@@ -94,7 +93,7 @@ executable ex5
   main-is: ex5.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
@@ -107,7 +106,7 @@ executable part1
   main-is: part1.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
@@ -120,7 +119,7 @@ executable part3
   main-is: part3.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week1
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts

@@ -4,16 +4,16 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5365ee58708558eaf9de879567a6b23d75e7b9eebb8830c2fbf4e90db91bdd0e
+-- hash: b1a92c60d2497275effc5beeee3aa73b5bb4e693fa09906c506273a0593c797c
 
-name:           fib
+name:           week3
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/gdstrong/fib#readme>
-homepage:       https://github.com/gdstrong/fib#readme
-bug-reports:    https://github.com/gdstrong/fib/issues
-author:         Glenn Strong
-maintainer:     Glenn.Strong@scss.tcd.ie
-copyright:      (c) 2020 Glenn Strong
+homepage:       https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week3#readme
+bug-reports:    https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week3/issues
+author:         Jack Gilbride
+maintainer:     Jack Gilbride
+copyright:      (c) 2020 Jack Gilbride
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -23,13 +23,13 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/gdstrong/fib
+  location: https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week3
 
 executable week3
   main-is: week3.hs
   other-modules:
       Lib
-      Paths_fib
+      Paths_week3
   hs-source-dirs:
       src
   ghc-options: -threaded -rtsopts
