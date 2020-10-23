@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b1a92c60d2497275effc5beeee3aa73b5bb4e693fa09906c506273a0593c797c
+-- hash: 5bed140e256612e2850ca13972d2aa7bcdacafd7285c79491ffe809b51d5b9e4
 
 name:           week3
 version:        0.1.0.0
@@ -15,7 +15,6 @@ author:         Jack Gilbride
 maintainer:     Jack Gilbride
 copyright:      (c) 2020 Jack Gilbride
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md

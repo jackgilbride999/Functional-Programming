@@ -6,7 +6,6 @@ author:              "Jack Gilbride"
 copyright:           "(c) 2020 Jack Gilbride"
 
 extra-source-files:
-- README.md
 - ChangeLog.md
 
 # Metadata used when publishing your package

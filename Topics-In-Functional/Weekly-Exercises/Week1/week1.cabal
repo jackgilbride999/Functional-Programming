@@ -17,7 +17,6 @@ copyright:      (c) 2020 Jack Gilbride
 license:        BSD3
 build-type:     Simple
 extra-source-files:
-    README.md
     ChangeLog.md
 
 source-repository head
