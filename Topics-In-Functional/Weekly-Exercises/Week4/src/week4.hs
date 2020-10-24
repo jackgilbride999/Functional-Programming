@@ -25,6 +25,23 @@ main = putStr "week4"
     should deliver (["entry 1", "entry 2"], 2)
 -}
 
+data Writer w a = Writer [w] a 
+
+instance Functor (Writer w) where
+    -- fmap :: (a -> b) -> f a -> f b
+    fmap f (Writer w a) = Writer w (f a)
+
+instance Applicative (Writer w) where
+    -- pure :: a -> f a
+    pure a = Writer [] a
+
+    -- (<*>) :: Writer (a -> b) -> Writer a -> Writer b
+    Writer w1 f <*> Writer w2 a = Writer (w1 ++ w2) (f a)
+
+
+
+
+    
 
 {-
     PART 2:
