@@ -25,23 +25,30 @@ main = putStr "week4"
     should deliver (["entry 1", "entry 2"], 2)
 -}
 
-data Writer w a = Writer [w] a 
+example = do
+    tell "entry 1"
+    tell "entry 2"
+    return (1 + 1)
+
+data Writer w a = Writer [String] a deriving Show
 
 instance Functor (Writer w) where
     -- fmap :: (a -> b) -> f a -> f b
-    fmap f (Writer w a) = Writer w (f a)
+    fmap f (Writer w x) = Writer w (f x)
 
 instance Applicative (Writer w) where
     -- pure :: a -> f a
-    pure a = Writer [] a
+    pure x = Writer [] x
 
     -- (<*>) :: Writer (a -> b) -> Writer a -> Writer b
-    Writer w1 f <*> Writer w2 a = Writer (w1 ++ w2) (f a)
+    Writer w1 f <*> Writer w2 x = Writer (w1 ++ w2) (f x)
 
+instance Monad (Writer w) where
+    -- (>>=) :: Writer w a -> (a -> Writer w b) -> Writer w b
+    Writer w a >>= f = (Writer w id) <*> f a
 
-
-
-    
+tell :: String -> Writer [String] ()
+tell w = Writer [w] ()
 
 {-
     PART 2:
