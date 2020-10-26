@@ -25,28 +25,43 @@ main = putStr "week4"
     should deliver (["entry 1", "entry 2"], 2)
 -}
 
+-- Running this delivers (["entry 1", "entry 2"], 2) as expected
 example = do
     tell "entry 1"
     tell "entry 2"
     return (1 + 1)
 
+-- The wrapper Writer holds a value a and a log w
 data Writer w a = Writer [String] a deriving Show
 
 instance Functor (Writer w) where
-    -- fmap :: (a -> b) -> f a -> f b
+    -- fmap :: (a -> b) -> Writer w a -> Writer w b
+    -- Apply f to the wrapped value
     fmap f (Writer w x) = Writer w (f x)
 
 instance Applicative (Writer w) where
     -- pure :: a -> f a
+    -- Wrap a and return it. There is no sensible item to put in the log.
     pure x = Writer [] x
 
     -- (<*>) :: Writer (a -> b) -> Writer a -> Writer b
+    -- <*> allows us to apply a wrapped function to a wrapped value without having to 
+    -- reach into the Applicative each time.
+    -- There is no reason to drop the log from either Writer, so concatenate them together 
+    -- in the result.
     Writer w1 f <*> Writer w2 x = Writer (w1 ++ w2) (f x)
 
 instance Monad (Writer w) where
     -- (>>=) :: Writer w a -> (a -> Writer w b) -> Writer w b
-    Writer w a >>= f = (Writer w id) <*> f a
+    -- Bind allows us to string function applications to monads together.
+    -- To bind (Writer w x) with f, pass x to f. f takes a value and returns a Writer, so 
+    -- f x is a Writer with a new log and new value.
+    -- But we don't want to lose the old log, we want to concatenate it to our new log.
+    -- To do this we can make use of the <*> function, where the value in the first writer is
+    -- the identity function, so as not to change the value wrapped in f x.
+    Writer w x >>= f = (Writer w id) <*> f x
 
+-- Tell just appends a new entry to the journal. It returns no interesting value.
 tell :: String -> Writer [String] ()
 tell w = Writer [w] ()
 
