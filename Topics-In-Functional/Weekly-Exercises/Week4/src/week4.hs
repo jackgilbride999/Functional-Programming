@@ -76,4 +76,16 @@ tell w = Writer [w] ()
     is (hint: it is related to the operations that the Writer must perform on the log itself). 
 
     For part 2, just write a short note on what the problem you run into is, and speculate on how to solve it.
+
+    ANSWER:
+
+    The first approach in generalizing this monad, letting the log be a list of any type, is not a problem for the declarations. 
+    None of the monad functions, nor the tell function, rely on functions which take a String. So in any type declarations, 
+    String can be replaced with a general type. I.e. a list of Strings can be replaced with a list of a general type.
+
+    While none of the monad functions rely on functions which take a String, some rely on functions which take a list. In particular 
+    (<*>) and (>>=) rely on the concatenate function to add new log vallues to the existing log. This is the whole purpose of the logs, 
+    so we cannot remove the functionality which does this. We could specify that the log is any type which has an implementation for
+    (++). This is not fully general, but it is the most general that we can make this type as we must be able to combine logs.
+
 -}
