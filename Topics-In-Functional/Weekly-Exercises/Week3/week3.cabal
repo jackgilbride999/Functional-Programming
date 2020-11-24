@@ -4,11 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5bed140e256612e2850ca13972d2aa7bcdacafd7285c79491ffe809b51d5b9e4
+-- hash: 4119585c6fcf429246f5a0acb30eee8374e56ee2211f5a436e74b1fd0354d78e
 
 name:           week3
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/gdstrong/fib#readme>
 homepage:       https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week3#readme
 bug-reports:    https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week3/issues
 author:         Jack Gilbride
@@ -17,7 +16,6 @@ copyright:      (c) 2020 Jack Gilbride
 license:        BSD3
 build-type:     Simple
 extra-source-files:
-    README.md
     ChangeLog.md
 
 source-repository head
@@ -31,8 +29,7 @@ executable week3
       Paths_week3
   hs-source-dirs:
       src
-  ghc-options: -threaded -rtsopts
+  ghc-options: -rtsopts
   build-depends:
       base >=4.7 && <5
-    , parallel
   default-language: Haskell2010

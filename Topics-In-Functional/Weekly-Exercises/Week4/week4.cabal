@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6afafc036bb7a51f0307b20a14db161d7778d7ebdf8cd69c62af5ec644ab1d9f
+-- hash: f2dc436a16e7ffc7e9ac276db8afa1119555c8698fa55efa2c4b7039616a9c98
 
 name:           week4
 version:        0.1.0.0
@@ -30,8 +30,7 @@ executable week4
       Paths_week4
   hs-source-dirs:
       src
-  ghc-options: -threaded -rtsopts
+  ghc-options: -rtsopts
   build-depends:
       base >=4.7 && <5
-    , parallel
   default-language: Haskell2010

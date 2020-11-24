@@ -19,8 +19,6 @@ description:         N/A
 
 dependencies:
 - base >= 4.7 && < 5
-- parallel
-
 
 executables:
   week4: 
@@ -29,6 +27,4 @@ executables:
 # GThese options are global (because they are not indented into an 'executables' stanza)
 source-dirs: src
 ghc-options:
-  - -threaded
   - -rtsopts
-

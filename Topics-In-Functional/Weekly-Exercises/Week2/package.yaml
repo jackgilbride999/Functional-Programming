@@ -15,12 +15,9 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/gdstrong/fib#readme>
 
 dependencies:
 - base >= 4.7 && < 5
-- parallel
-
 
 executables:
   week2: 
@@ -29,6 +26,5 @@ executables:
 # GThese options are global (because they are not indented into an 'executables' stanza)
 source-dirs: src
 ghc-options:
-  - -threaded
   - -rtsopts
 
