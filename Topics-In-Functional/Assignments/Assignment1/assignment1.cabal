@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 957ee7d3b58ed8bc4ef170ee852c2745345db5dfb14e6a96ca23e19924256a58
+-- hash: 0d3fa7fc8e73bb4cffaa8b55c930f875ad421e9315618f4dfb0101a68ab5a20d
 
 name:           assignment1
 version:        0.1.0.0
@@ -33,4 +33,5 @@ executable assignment1
       base >=4.7 && <5
     , blaze-html
     , scotty
+    , text
   default-language: Haskell2010
