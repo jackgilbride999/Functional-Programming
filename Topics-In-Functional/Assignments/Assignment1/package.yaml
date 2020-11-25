@@ -21,6 +21,7 @@ dependencies:
 - blaze-html
 - scotty
 - text
+- JuicyPixels
 
 executables:
   assignment1:

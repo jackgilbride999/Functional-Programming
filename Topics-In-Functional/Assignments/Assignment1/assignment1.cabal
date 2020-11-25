@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0d3fa7fc8e73bb4cffaa8b55c930f875ad421e9315618f4dfb0101a68ab5a20d
+-- hash: 0abd90990e6628262132b936fc029f0c48e87c2106ad62c0928d59454d3f5778
 
 name:           assignment1
 version:        0.1.0.0
@@ -26,11 +26,14 @@ executable assignment1
   main-is: Main.hs
   other-modules:
       Lib
+      Render
+      Shapes
       Paths_assignment1
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      JuicyPixels
+    , base >=4.7 && <5
     , blaze-html
     , scotty
     , text

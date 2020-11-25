@@ -5,6 +5,9 @@ import Text.Blaze.Html5 hiding (main)
 import Text.Blaze.Html5.Attributes
 import Text.Blaze.Html.Renderer.Text
 
+import Shapes
+import Render (render,defaultWindow)
+
 main = Scotty.scotty 3000 $ do
     Scotty.get "/" $ do
         Scotty.html $ response " world!"
@@ -13,3 +16,10 @@ response :: Text -> Text
 response n = do 
     renderHtml $ do
         h1 ("Hello" >> toHtml n)
+
+
+exampleDrawing =  [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]
+
+mandel = mandelbrotDrawing (-5, -5) (5, 5)
+
+test = render "output.png" defaultWindow exampleDrawing >> render "mandelbrot.png" defaultWindow mandel
