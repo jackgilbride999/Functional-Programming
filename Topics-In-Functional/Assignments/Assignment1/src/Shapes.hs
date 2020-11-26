@@ -1,7 +1,7 @@
 module Shapes(
   Shape, Point, Vector, Transform, Drawing,
   point, getX, getY,
-  empty, circle, square,
+  empty, circle, square, rectangle, ellipse,
   identity, translate, rotate, scale, (<+>),
   inside, 
   next, mandelbrot, fairlyClose, inMandelbrotSet, approxTest, mandelbrotDrawing)  where
@@ -40,10 +40,13 @@ type Point  = Vector
 point :: Double -> Double -> Point
 point = vector
 
+type AspectRatio = Double
 
 data Shape = Empty 
            | Circle 
            | Square
+           | Rectangle AspectRatio
+           | Ellipse AspectRatio
              deriving Show
 
 empty, circle, square :: Shape
@@ -51,6 +54,8 @@ empty, circle, square :: Shape
 empty = Empty
 circle = Circle
 square = Square
+rectangle width height = Rectangle (width/height)
+ellipse width height = Ellipse (width/height)
 
 -- Transformations
 
@@ -90,6 +95,8 @@ insides :: Point -> Shape -> Bool
 p `insides` Empty = False
 p `insides` Circle = distance p <= 1
 p `insides` Square = maxnorm  p <= 1
+Vector x y `insides` Rectangle aspect = (sqrt (y**2) <= 1) && (sqrt (x**2) <= aspect)
+Vector x y `insides` Ellipse aspect = (x**2/aspect**2) + (y**2/1**2) <= 1
 
 
 distance :: Point -> Double

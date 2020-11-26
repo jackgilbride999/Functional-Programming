@@ -8,31 +8,27 @@ import Text.Blaze.Html.Renderer.Text
 import Shapes
 import Render (render,defaultWindow)
 
-main = 
- Scotty.scotty 3000 $ do
-    Scotty.get "/" $ do
-        Scotty.html $ response " world!"
-    
-    Scotty.get "/output.png" $ Scotty.file "./output.PNG"
+exampleDrawing =  [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]
+mandel = mandelbrotDrawing (-5, -5) (5, 5)
+rectangleDrawing = [
+    (scale (point 0.2 0.2) <+> translate (point 0 0) , rectangle 16.0 9.0),
+    (scale (point 0.2 0.2) <+> translate (point 5 0), square),
+    (scale (point 0.2 0.2) <+> translate (point 0 5), ellipse 16.0 9.0)
+     ]
 
-    --Scotty.get "drawing/:shape" $
+main = do 
+    render "output.png" defaultWindow exampleDrawing
+    render "mandelbrot.png" defaultWindow mandel
+    render "rectangle.png" defaultWindow rectangleDrawing
+    Scotty.scotty 3000 $ do
+        Scotty.get "/" $ do
+            Scotty.html $ response " world!"
+        Scotty.get "/output.png" $ do 
+            Scotty.file "./rectangle.PNG"
         
-
-
-blaze = Scotty.html . renderHtml
-
 response :: Text -> Text
 response n = do 
     renderHtml $ do
         h1 ("Hello" >> toHtml n)
-        img ! src "output.png"
+        img ! src "output.png" ! width "50%"
         p " [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]"
-     --   img ! src "drawing/[ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]"
-
-
-
-exampleDrawing =  [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]
-
-mandel = mandelbrotDrawing (-5, -5) (5, 5)
-
-test = render "output.png" defaultWindow exampleDrawing >> render "mandelbrot.png" defaultWindow mandel
