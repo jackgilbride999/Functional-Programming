@@ -1,6 +1,8 @@
 module Shapes(
   Shape, Point, Vector, Transform, Drawing,
   point, getX, getY,
+  color, red, green, blue, transparent,
+  colorPixel,
   empty, circle, square, rectangle, ellipse, convexPolygon,
   identity, translate, rotate, scale, (<+>),
   inside, 
@@ -41,6 +43,13 @@ point :: Double -> Double -> Point
 point = vector
 
 type AspectRatio = Double
+data Color = Color Int Int Int Double
+
+color r g b a = Color r g b a
+red = Color 255 0 0 1
+green = Color 0 255 0 1
+blue = Color 0 0 255 1
+transparent = Color 0 0 0 0
 
 data Shape = Empty 
            | Circle 
@@ -86,8 +95,13 @@ transform (Compose t1 t2)            p = transform t2 $ transform t1 p
 -- Drawings
 
 type Drawing = [(Transform,Shape)]
+type ColoredDrawing = [(Transform, Shape, Color)]
 
 -- interpretation function for drawings
+
+colorPixel :: Point -> ColoredDrawing -> Color
+colorPixel p [] = transparent
+colorPixel p ((t,s,c) : ds)  = if inside1 p (t, s) then c else colorPixel p ds
 
 inside :: Point -> Drawing -> Bool
 inside p d = or $ map (inside1 p) d
@@ -105,6 +119,7 @@ Vector x y `insides` Ellipse aspect = (x**2/aspect**2) + (y**2/1**2) <= 1
 Vector x y `insides` ConvexPolygon (p1:(p2:[])) = halfLine (Vector x y) p1 p2
 Vector x y `insides` ConvexPolygon (p1:(p2:ps)) = if halfLine (Vector x y) p1 p2 then (Vector x y) `insides` ConvexPolygon (p2:ps) else False
 
+halfLine :: (Vector) -> (Vector) -> (Vector) -> Bool
 halfLine (Vector x y) (Vector x1 y1) (Vector x2 y2) = zcross (Vector (x1-x) (y1-y)) (Vector (x2-x1) (y2-y1)) > 0
                                                         where zcross (Vector a b) (Vector c d) = a*d - b*c
 

@@ -54,25 +54,12 @@ render path win sh = writePng path $ generateImage pixRenderer w h
     where
       Window _ _ (w,h) = win
 
-      pixRenderer x y = PixelRGB8 (fromIntegral x) (fromIntegral y) (colorForImage $  myFunc (x,y))
+      pixRenderer x y = PixelRGB8 (fromIntegral x) (fromIntegral y) (colorForImage $  generatePoint (x,y))
       
-      myFunc :: (Int, Int) -> Point
-      myFunc (x, y) = 
-        if inWindow (x, y) win then pixel (x,y) win else point 0 0
-
-      inWindow :: (Int, Int) -> Window -> Bool
-      inWindow (x, y) (Window _ _ (w, h)) =
-        if (x >= 0 && x < w && y >= 0 && y < h) then True else False
+      generatePoint :: (Int, Int) -> Point
+      generatePoint (x, y) = 
+          if (x >= 0 && x < w && y >= 0 && y < h) then pixel (x,y) win else point 0 0
 
       colorForImage p | p `inside` sh = 255
                       | otherwise     = 0
 
-      {-
-      lookup1 :: (Int,Int) -> [((Int,Int), Point)] -> Point
-      lookup1 a m = case lookup a m of
-                      Nothing -> point 0 0
-                      Just x  -> x
-
-      locations :: [ ((Int,Int), Point) ]
-      locations = concat $ zipWith zip (coords win) (pixels win)
-      -}
