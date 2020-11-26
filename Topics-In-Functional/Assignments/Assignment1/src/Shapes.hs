@@ -107,66 +107,6 @@ Vector x y `insides` ConvexPolygon (p1:(p2:ps)) = if halfLine (Vector x y) p1 p2
 
 halfLine (Vector x y) (Vector x1 y1) (Vector x2 y2) = zcross (Vector (x1-x) (y1-y)) (Vector (x2-x1) (y2-y1)) > 0
                                                         where zcross (Vector a b) (Vector c d) = a*d - b*c
-{-
-Vector x y `insides` ConvexPolygon ps = helper (Vector x y) (ConvexPolygon ps) 0 0 (length ps)
-
-helper :: Point -> Shape -> Int -> Int -> Int -> Bool
-helper (Vector x y) (ConvexPolygon ((Vector x1 y1) : ((Vector x2 y2) : ps))) i count n =
-    if isIntersect (Vector x1 y1) (Vector x2 y2) (Vector x y) (Vector 9999 y) 
-    && direction (Vector x1 y1) (Vector x y) (Vector x2 y2) == 0
-          then onLine (Vector x1 y1) (Vector x2 y2) (Vector x y)
-        else 
-        let countplus = count + 1
-            iplus = (i+1) `mod` n in
-            if i /= 0
-              then helper (Vector x y) (ConvexPolygon (Vector x2 y2 : ps)) iplus countplus n
-              else (countplus `mod` 1) == 0
-{-
-Vector x y `insides` ConvexPolygon [] = False
-Vector x y `insides` ConvexPolygon (Vector x1 y1 : []) = False
-Vector x y `insides` ConvexPolygon (Vector x1 y1 : (Vector x2 y2 : ps)) = 
-  if isIntersect (Vector x1 y1) (Vector x2 y2) (Vector x y) (Vector 9999 y)
-    && direction (Vector x1 y1) (Vector x y) (Vector x2 y2) == 0
-      then onLine (Vector x1 y1) (Vector x2 y2) (Vector x y)
-      else (Vector x2 y2 `insides` ConvexPolygon ps)
--}      
-
-{-
-isIntersect (Vector line1point1x1 line1point1y1) (Vector line1point1x2 line1point1y2) 
-            (Vector line1point2x1 line1point2y1) (Vector line1point2x2 line1point2y2)
-            (Vector line2point1x1 line2point1y1) (Vector line2point1x2 line2point1y2)
-            (Vector line2point2x1 line2point2y1) (Vector line2point2x2 line2point2y2) = 
--}
-
-onLine :: (Vector) -> (Vector) -> (Vector) -> Bool
-onLine (Vector x1 y1) (Vector x2 y2) (Vector px py) = 
-  if px <= (max x1 x2) && px <= (min x1 x2) && py <= (max y1 y2) && py <= (min y1 y2)
-    then True
-    else False
-
-isIntersect :: (Vector) -> (Vector) -> (Vector) -> (Vector) -> Bool
-isIntersect line1point1 line1point2 line2point1 line2point2 =
-  let dir1 = direction line1point1 line1point2 line2point1
-      dir2 = direction line1point1 line1point2 line2point2
-      dir3 = direction line2point1 line2point2 line1point1
-      dir4 = direction line2point1 line2point2 line1point2
-  in if (dir1 /= dir2 && dir3 /= dir4) -- they are intersecting
-    || (dir1 == 0 && onLine line1point1 line1point2 line2point1) -- when p2 of line2 is on line1
-    || (dir2 == 0 && onLine line1point1 line1point2 line2point2) -- when p1 of line2 is on line 1
-    || (dir3 == 0 && onLine line2point1 line2point2 line1point1) -- when p2 of line1 is on line 2
-    || (dir4 == 0 && onLine line2point1 line2point2 line1point2) -- when p1 of line1 is on line2
-    then True 
-    else False
-
-direction :: (Vector) -> (Vector) -> (Vector) -> Int
-direction (Vector ax ay) (Vector bx by) (Vector cx cy) = 
-  if val == 0
-    then 0    -- colinear
-    else if val < 0
-      then 2 -- anti-clockwise direction
-      else 1 -- clockwise direction
-      where val = (by-ay) * (cx-bx) - (bx-ax)*(cy-by)
--}
 
 distance :: Point -> Double
 distance (Vector x y ) = sqrt ( x**2 + y**2 )
