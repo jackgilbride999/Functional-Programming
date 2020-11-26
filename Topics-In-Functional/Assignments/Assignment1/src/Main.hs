@@ -11,9 +11,10 @@ import Render (render,defaultWindow)
 exampleDrawing =  [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]
 mandel = mandelbrotDrawing (-5, -5) (5, 5)
 rectangleDrawing = [
-    (scale (point 0.2 0.2) <+> translate (point 0 0) , rectangle 16.0 9.0),
+   (scale (point 0.2 0.2) <+> translate (point 0 0) , rectangle 16.0 9.0),
     (scale (point 0.2 0.2) <+> translate (point 5 0), square),
-    (scale (point 0.2 0.2) <+> translate (point 0 5), ellipse 16.0 9.0)
+    (scale (point 0.2 0.2) <+> translate (point 0 5), ellipse 9.0 16.0),
+    (scale (point 0.2 0.2) <+> translate (point (-5) 0), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5])
      ]
 
 main = do 
