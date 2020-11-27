@@ -21,6 +21,9 @@ vector = Vector
 cross :: Vector -> Vector -> Double
 cross (Vector a b) (Vector a' b') = a * a' + b * b'
 
+add :: Matrix -> Matrix -> Matrix
+add (Matrix (Vector a1 b1) (Vector c1 d1)) (Matrix (Vector a2 b2) (Vector c2 d2)) = Matrix (Vector (a1+a2) (b1+b2)) (Vector (c1+c2) (d1+d2))
+
 mult :: Matrix -> Vector -> Vector
 mult (Matrix r0 r1) v = Vector (cross r0 v) (cross r1 v)
 
@@ -91,6 +94,10 @@ identity = Identity
 translate = Translate
 scale = Scale
 rotate angle = Rotate $ matrix (cos angle) (-sin angle) (sin angle) (cos angle)
+
+Translate (Vector x1 y1) <+> Translate (Vector x2 y2) = Translate (Vector (x1+x2) (y1+y2))
+Scale (Vector x1 y1) <+> Scale (Vector x2 y2) = Scale (Vector (x1+x2) (y1+y2))
+Rotate angle1 <+> Rotate angle2 = Rotate (angle1 `add` angle2)
 t0 <+> t1 = Compose t0 t1
 
 transform :: Transform -> Point -> Point
@@ -99,8 +106,6 @@ transform (Translate (Vector tx ty)) (Vector px py)  = Vector (px - tx) (py - ty
 transform (Scale (Vector tx ty))     (Vector px py)  = Vector (px / tx)  (py / ty)
 transform (Rotate m)                 p = (invert m) `mult` p
 transform (Compose t1 t2)            p = transform t2 $ transform t1 p
-
--- Drawings
 
 type Drawing = [(Transform,Shape)]
 type ColoredDrawing = [(Transform, Shape, Color)]
@@ -184,4 +189,3 @@ mandelbrotDrawing (x1, y1) (x2, y2) =
     else
       (translate (point 0 0), empty) | x <- [x1, x1 + 0.1 .. x2], y <- [y1, y1 + 0.1 ..y2]]
 
-      -- Translate (Vector x1 y1) <+> Translate (Vector x2 y2) = Translate (Vector (x1+x2) (y1+y2))

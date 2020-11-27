@@ -15,17 +15,24 @@ main = do
     renderColored "rectangle.png" defaultWindow maskedDrawing
     Scotty.scotty 3000 $ do
         Scotty.get "/" $ do
-            Scotty.html $ response " world!"
+            Scotty.html $ response
         Scotty.get "/output.png" $ do 
             Scotty.file "./rectangle.PNG"
         
-response :: Text -> Text
-response n = do 
+response :: Text
+response = do 
     renderHtml $ do
-        div ! 
-        h1 ("Hello" >> toHtml n)
-        img ! src "output.png" ! width "50%"
-        p " [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]"
+        Text.Blaze.Html5.style (".content { \n \
+        \    max-width: 500px; \n\
+        \    margin: auto; \n\
+        \    text-align: center; \n\
+        \} ")
+        Text.Blaze.Html5.div ! class_ "content" $ do
+            h1 ("Shape Server")
+            img ! src "output.png" ! width "50%"
+            p " [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]"
+        
+        
 
 
 
