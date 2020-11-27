@@ -8,31 +8,6 @@ import Text.Blaze.Html.Renderer.Text
 import Shapes
 import Render (render, renderColored,defaultWindow)
 
-exampleDrawing =  [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]
-mandel = mandelbrotDrawing (-5, -5) (5, 5)
-rectangleDrawing = [
-   (scale (point 0.2 0.2) <+> translate (point 0 0) , rectangle 16.0 9.0),
-    (scale (point 0.2 0.2) <+> translate (point 5 0), square),
-    (scale (point 0.2 0.2) <+> translate (point 0 5), ellipse 9.0 16.0),
-    (scale (point 0.2 0.2) <+> translate (point (-5) 0), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5])
-     ]
-
-colorDrawing = [
-   (scale (point 0.2 0.2) <+> translate (point 0 0) , rectangle 16.0 9.0, red),
-    (scale (point 0.2 0.2) <+> translate (point 5 0), square, blue),
-    (scale (point 0.2 0.2) <+> translate (point 0 5), ellipse 9.0 16.0, green),
-    (scale (point 0.2 0.2) <+> translate (point (-5) 0), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5], color 100 150 200 1)
-     ]
-
-colorDrawing2 = [
-   (scale (point 0.2 0.2) <+> translate (point 3 0) , rectangle 16.0 9.0, blue),
-    (scale (point 0.2 0.2) <+> translate (point 2 6), square, green),
-    (scale (point 0.2 0.2) <+> translate (point (-4) 5), ellipse 9.0 16.0, red),
-    (scale (point 0.2 0.2) <+> translate (point (-5) (-5)), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5], color 255 255 0 1)
-     ]
-    
-maskedDrawing = mask 120 colorDrawing2 colorDrawing
-
 main = do 
     render "output.png" defaultWindow exampleDrawing
     render "mandelbrot.png" defaultWindow mandel
@@ -47,6 +22,34 @@ main = do
 response :: Text -> Text
 response n = do 
     renderHtml $ do
+        div ! 
         h1 ("Hello" >> toHtml n)
         img ! src "output.png" ! width "50%"
         p " [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]"
+
+
+
+exampleDrawing =  [ (scale (point 0.5 0.25) <+> translate (point 1.2 0.4), circle) ]
+mandel = mandelbrotDrawing (-5, -5) (5, 5)
+rectangleDrawing = [
+   (scale (point 0.2 0.2) <+> translate (point 0 0) , rectangle 16.0 9.0),
+    (scale (point 0.2 0.2) <+> translate (point 5 0), square),
+    (scale (point 0.2 0.2) <+> translate (point 0 5), ellipse 9.0 16.0),
+    (scale (point 0.2 0.2) <+> translate (point (-5) 0), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5])
+     ]
+
+colorDrawing = [
+   (translate (point 0 0) , rectangle 16.0 9.0, red),
+    (translate (point 5 0), square, green),
+    (translate (point 0 5), ellipse 9.0 16.0, green),
+    (translate (point (-5) 0), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5], blue)
+     ]
+
+colorDrawing2 = [
+   (translate (point 2 0) , rectangle 16.0 9.0, blue),
+   (translate (point 2 6), square, green),
+   (translate (point (-4) 5), ellipse 9.0 16.0, red),
+    (translate (point (-5) (-3)), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5], color 255 255 0 1)
+     ]
+    
+maskedDrawing = mask 120 colorDrawing colorDrawing2

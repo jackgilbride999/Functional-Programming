@@ -2,7 +2,6 @@ module Render(Window,defaultWindow,samples,render, renderColored) where
 import Codec.Picture
 import Shapes
 
-
 --  A window specifies what part of the world to render and at which
 --  resolution.
 --  Values are top left & bottom right corner to be rendered, 

@@ -57,7 +57,7 @@ color r g b a = Color r g b a
 red = Color 255 0 0 255
 green = Color 0 255 0 255
 blue = Color 0 0 255 255
-transparent = Color 0 0 0 0
+transparent = Color 255 255 255 0
 
 data Shape = Empty 
            | Circle 
@@ -106,22 +106,30 @@ type Drawing = [(Transform,Shape)]
 type ColoredDrawing = [(Transform, Shape, Color)]
 
 mask :: Word8 -> ColoredDrawing -> ColoredDrawing -> ColoredDrawing
---mask transparency maskDrawing baseDrawing = 
-
 mask _ _ [] = []
-mask transparency [] ((bt, bs, bc) : bases) = (bt, bs, bc) : mask transparency [] bases 
-mask transparency ((mt, ms, mc) : masks) (bases) = (mt, ms, (Color (r mc) (g mc) (b mc) transparency)) : mask transparency (masks) (bases)
-
--- List 1
--- List 2 
--- Merge List 1 with transparency 1 and List 2 with transparency Double
--- Draw new list
-
--- interpretation function for drawings
+mask transparency [] ((mt, ms, mc) : masks) = (mt, ms, (Color (r mc) (g mc) (b mc) transparency)) : mask transparency [] masks
+mask transparency ((bt, bs, bc) : bases) (masks) = (bt, bs, bc) : mask transparency bases masks 
 
 colorPixel :: Point -> ColoredDrawing -> Color
-colorPixel p [] = transparent
-colorPixel p ((t,s,c) : ds)  = if inside1 p (t, s) then c else colorPixel p ds
+colorPixel p drawing = computeSummativeColor p drawing transparent 
+
+computeSummativeColor :: Point -> ColoredDrawing -> Color -> Color
+computeSummativeColor p [] col = col
+computeSummativeColor p ((t,s,c):ds) col = 
+  if inside1 p (t, s) 
+    then recursiveCall alphaBlend 
+    else recursiveCall col 
+    where
+    recursiveCall = computeSummativeColor p ds
+    alphaBlend = (Color (blendColor (r col) (r c) (a c)) (blendColor (g col) (g c) (a c)) (blendColor (b col) (b c) (a c)) 255)
+
+blendColor :: Word8 -> Word8 -> Word8 -> Word8 
+blendColor backgroundCol foregroundCol foregroundAlpha = fromIntegral $ (bc * (255 - fa) + fc * fa) `div` 255 
+     where 
+          bc = fromIntegral backgroundCol
+          fc = fromIntegral foregroundCol
+          fa = fromIntegral foregroundAlpha
+
 
 inside :: Point -> Drawing -> Bool
 inside p d = or $ map (inside1 p) d
