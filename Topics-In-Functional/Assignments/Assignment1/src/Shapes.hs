@@ -4,11 +4,11 @@ module Shapes(
   r, g, b, a,
   point, getX, getY,
   color, red, green, blue, transparent,
+  orange, yellow, cyan, purple, magenta, pink, black, white,
   colorPixel,
   empty, circle, square, rectangle, ellipse, convexPolygon,
   identity, translate, rotate, scale, (<+>),
-  inside, 
-  next, mandelbrot, fairlyClose, inMandelbrotSet, approxTest, mandelbrotDrawing)  where
+  inside)  where
 
 import Data.Word
 
@@ -54,12 +54,20 @@ data Color = Color {
   g :: Word8, 
   b:: Word8, 
   a ::Word8
-}
+} deriving Show
 
 color r g b a = Color r g b a
 red = Color 255 0 0 255
+orange = Color 255 140 0 255
+yellow = Color 255 255 0 255
 green = Color 0 255 0 255
 blue = Color 0 0 255 255
+cyan = Color 0 255 255 255
+purple = Color 128 0 128 255
+magenta = Color 255 0 255 255
+pink = Color 255 192 203 255
+black = Color 0 0 0 255
+white = Color 255 255 255 255
 transparent = Color 255 255 255 0
 
 data Shape = Empty 
@@ -153,7 +161,7 @@ Vector x y `insides` ConvexPolygon (p1:(p2:[])) = halfLine (Vector x y) p1 p2
 Vector x y `insides` ConvexPolygon (p1:(p2:ps)) = if halfLine (Vector x y) p1 p2 then (Vector x y) `insides` ConvexPolygon (p2:ps) else False
 
 halfLine :: (Vector) -> (Vector) -> (Vector) -> Bool
-halfLine (Vector x y) (Vector x1 y1) (Vector x2 y2) = zcross (Vector (x1-x) (y1-y)) (Vector (x2-x1) (y2-y1)) > 0
+halfLine (Vector x y) (Vector x1 y1) (Vector x2 y2) = zcross (Vector (x1-x) (y1-y)) (Vector (x2-x1) (y2-y1)) < 0
                                                         where zcross (Vector a b) (Vector c d) = a*d - b*c
 
 distance :: Point -> Double
@@ -163,29 +171,3 @@ maxnorm :: Point -> Double
 maxnorm (Vector x y ) = max (abs x) (abs y)
 
 testShape = (scale (point 10 10), circle)
-
-
--- Mandelbrot functions
-next :: Point -> Point -> Point
-next (Vector u v) (Vector x y) = Vector (x*x - y*y +u) (2*x*y+v)
-
-mandelbrot :: Point -> [Point]
-mandelbrot p = iterate (next p) (Vector 0 0)
-
-fairlyClose :: Point -> Bool
-fairlyClose (Vector u v) = (u*u + v*v) < 100
-
-inMandelbrotSet :: Point -> Bool
-inMandelbrotSet p = all fairlyClose (mandelbrot p)
-
-approxTest :: Int -> Point -> Bool
-approxTest n p = all fairlyClose (take n (mandelbrot p))
-
-mandelbrotDrawing :: (Double, Double) -> (Double, Double) -> Drawing
-mandelbrotDrawing (x1, y1) (x2, y2) = 
-  [ 
-    if (approxTest 100 (point x y)) then
-    (scale (point 0.1 0.1) <+> translate (point x y), circle)
-    else
-      (translate (point 0 0), empty) | x <- [x1, x1 + 0.1 .. x2], y <- [y1, y1 + 0.1 ..y2]]
-

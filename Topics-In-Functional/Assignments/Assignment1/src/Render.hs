@@ -71,4 +71,3 @@ renderColored path win sh = writePng path $ generateImage pixRenderer w h
       generatePoint :: (Int, Int) -> Point
       generatePoint (x, y) = 
           if (x >= 0 && x < w && y >= 0 && y < h) then pixel (x,y) win else point 0 0
-
