@@ -23,12 +23,21 @@ colorDrawing = [
     (scale (point 0.2 0.2) <+> translate (point 0 5), ellipse 9.0 16.0, green),
     (scale (point 0.2 0.2) <+> translate (point (-5) 0), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5], color 100 150 200 1)
      ]
+
+colorDrawing2 = [
+   (scale (point 0.2 0.2) <+> translate (point 3 0) , rectangle 16.0 9.0, blue),
+    (scale (point 0.2 0.2) <+> translate (point 2 6), square, green),
+    (scale (point 0.2 0.2) <+> translate (point (-4) 5), ellipse 9.0 16.0, red),
+    (scale (point 0.2 0.2) <+> translate (point (-5) (-5)), convexPolygon [point 0 5, point 0 0, point 5 0, point 0 5], color 255 255 0 1)
+     ]
     
+maskedDrawing = mask 120 colorDrawing2 colorDrawing
 
 main = do 
     render "output.png" defaultWindow exampleDrawing
     render "mandelbrot.png" defaultWindow mandel
     renderColored "rectangle.png" defaultWindow colorDrawing
+    renderColored "rectangle.png" defaultWindow maskedDrawing
     Scotty.scotty 3000 $ do
         Scotty.get "/" $ do
             Scotty.html $ response " world!"

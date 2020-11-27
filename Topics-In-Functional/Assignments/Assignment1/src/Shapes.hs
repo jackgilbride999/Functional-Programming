@@ -1,5 +1,6 @@
 module Shapes(
   Shape, Point, Vector, Transform, Drawing, ColoredDrawing, Color,
+  mask,
   r, g, b, a,
   point, getX, getY,
   color, red, green, blue, transparent,
@@ -49,13 +50,13 @@ data Color = Color {
   r :: Word8, 
   g :: Word8, 
   b:: Word8, 
-  a ::Double
+  a ::Word8
 }
 
 color r g b a = Color r g b a
-red = Color 255 0 0 1
-green = Color 0 255 0 1
-blue = Color 0 0 255 1
+red = Color 255 0 0 255
+green = Color 0 255 0 255
+blue = Color 0 0 255 255
 transparent = Color 0 0 0 0
 
 data Shape = Empty 
@@ -103,6 +104,18 @@ transform (Compose t1 t2)            p = transform t2 $ transform t1 p
 
 type Drawing = [(Transform,Shape)]
 type ColoredDrawing = [(Transform, Shape, Color)]
+
+mask :: Word8 -> ColoredDrawing -> ColoredDrawing -> ColoredDrawing
+--mask transparency maskDrawing baseDrawing = 
+
+mask _ _ [] = []
+mask transparency [] ((bt, bs, bc) : bases) = (bt, bs, bc) : mask transparency [] bases 
+mask transparency ((mt, ms, mc) : masks) (bases) = (mt, ms, (Color (r mc) (g mc) (b mc) transparency)) : mask transparency (masks) (bases)
+
+-- List 1
+-- List 2 
+-- Merge List 1 with transparency 1 and List 2 with transparency Double
+-- Draw new list
 
 -- interpretation function for drawings
 

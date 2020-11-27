@@ -9,10 +9,9 @@ import Shapes
 --             and the size of the output device to render into
 data Window = Window Point Point (Int,Int)
 
--- Default window renders a small region around the origin into
--- a 50x50 pixel image
+-- Default window renders a small region around the origin into a pixel image
 defaultWindow :: Window
-defaultWindow = Window (point (-1.5) (-1.5)) (point 1.5 1.5) (50,50)
+defaultWindow = Window (point (-10) (-10)) (point 10 10) (480,480)
 
 
 -- Generate a list of evenly spaced samples between two values.
@@ -20,8 +19,6 @@ defaultWindow = Window (point (-1.5) (-1.5)) (point 1.5 1.5) (50,50)
 --      between the two bounds: [ -1.5, -1.375, -1.25 ... ]
 samples :: Double -> Double -> Int -> [Double]
 samples c0 c1 n = take n [ c0, c0 + (c1-c0) / (fromIntegral $ n-1) .. ]
--- c0 + (c1-c0)*n
--- (c1 - c0)*n
 
 -- Generate the matrix of points corresponding to the pixels of a window.
 pixels :: Window -> [[Point]]
@@ -67,10 +64,10 @@ renderColored path win sh = writePng path $ generateImage pixRenderer w h
     where
       Window _ _ (w,h) = win
 
-      pixRenderer x y = func $ colorPixel (generatePoint (x,y)) sh
+      pixRenderer x y = toPixelRGBA8 $ colorPixel (generatePoint (x,y)) sh
       
-      func :: Color -> PixelRGB8
-      func col = PixelRGB8 (r col) (g col) (b col)
+      toPixelRGBA8 :: Color -> PixelRGBA8
+      toPixelRGBA8 col = PixelRGBA8 (r col) (g col) (b col) (a col)
       
       generatePoint :: (Int, Int) -> Point
       generatePoint (x, y) = 
