@@ -1,4 +1,4 @@
-module Render(Window,defaultWindow,samples,render) where
+module Render(Window,defaultWindow,samples,render, renderColored) where
 import Codec.Picture
 import Shapes
 
@@ -47,8 +47,6 @@ pixel (x,y) (Window p0 p1 (w,h)) =
     pointY = sample (h-y) (getY p0) (getY p1) h
 
 -- render a drawing into an image, then save into a file
--- NB: the lookup1 function is a VERY inefficient way to convert screen coordinates to drawing
---     coordinates! It should be possible to do this in O(1) time, not O(N) time!!
 render :: String -> Window -> Drawing -> IO ()
 render path win sh = writePng path $ generateImage pixRenderer w h
     where
@@ -62,4 +60,19 @@ render path win sh = writePng path $ generateImage pixRenderer w h
 
       colorForImage p | p `inside` sh = 255
                       | otherwise     = 0
+
+
+renderColored :: String -> Window -> ColoredDrawing -> IO ()
+renderColored path win sh = writePng path $ generateImage pixRenderer w h
+    where
+      Window _ _ (w,h) = win
+
+      pixRenderer x y = func $ colorPixel (generatePoint (x,y)) sh
+      
+      func :: Color -> PixelRGB8
+      func col = PixelRGB8 (r col) (g col) (b col)
+      
+      generatePoint :: (Int, Int) -> Point
+      generatePoint (x, y) = 
+          if (x >= 0 && x < w && y >= 0 && y < h) then pixel (x,y) win else point 0 0
 

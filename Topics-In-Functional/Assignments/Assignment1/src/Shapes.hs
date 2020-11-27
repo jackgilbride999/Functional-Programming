@@ -1,5 +1,6 @@
 module Shapes(
-  Shape, Point, Vector, Transform, Drawing,
+  Shape, Point, Vector, Transform, Drawing, ColoredDrawing, Color,
+  r, g, b, a,
   point, getX, getY,
   color, red, green, blue, transparent,
   colorPixel,
@@ -8,6 +9,7 @@ module Shapes(
   inside, 
   next, mandelbrot, fairlyClose, inMandelbrotSet, approxTest, mandelbrotDrawing)  where
 
+import Data.Word
 
 -- Utilities
 
@@ -43,7 +45,12 @@ point :: Double -> Double -> Point
 point = vector
 
 type AspectRatio = Double
-data Color = Color Int Int Int Double
+data Color = Color {
+  r :: Word8, 
+  g :: Word8, 
+  b:: Word8, 
+  a ::Double
+}
 
 color r g b a = Color r g b a
 red = Color 255 0 0 1
@@ -155,3 +162,5 @@ mandelbrotDrawing (x1, y1) (x2, y2) =
     (scale (point 0.1 0.1) <+> translate (point x y), circle)
     else
       (translate (point 0 0), empty) | x <- [x1, x1 + 0.1 .. x2], y <- [y1, y1 + 0.1 ..y2]]
+
+      -- Translate (Vector x1 y1) <+> Translate (Vector x2 y2) = Translate (Vector (x1+x2) (y1+y2))
