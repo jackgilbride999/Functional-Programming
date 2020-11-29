@@ -43,7 +43,7 @@ handleInput channel = do
     userInput <- getLine
     case userInput of
         "quit" -> do
-            chanContents <- getChanContents channel
+            --chanContents <- getChanContents channel               -- ### Uncomment the line to the left to print the contents of the channel before quitting. This means that the program will wait for the threads to terminate, so that it can print the results, before it terminates.
             print chanContents
         _ -> do
             case userInput of
@@ -59,7 +59,7 @@ handleInput channel = do
 
 worker :: Chan Double -> Double -> IO()
 worker channel input = let
-    rounded =  fromIntegral $ round (input)
+    rounded =  fromIntegral $ round (input)     -- round the number so it makes sense to get its fib
     in writeChan channel (fib rounded)
 
 fib :: Double -> Double
