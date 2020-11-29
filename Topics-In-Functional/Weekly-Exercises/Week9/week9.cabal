@@ -1,0 +1,35 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: e6f9e3b87bb806bbed84ca31b11db5b810c25e4303203221ccb12302c99b2f7b
+
+name:           week9
+version:        0.1.0.0
+homepage:       https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week9#readme
+bug-reports:    https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week9/issues
+author:         Jack Gilbride
+maintainer:     Jack Gilbride
+copyright:      (c) 2020 Jack Gilbride
+license:        BSD3
+build-type:     Simple
+extra-source-files:
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week9
+
+executable week9
+  main-is: week9.hs
+  other-modules:
+      Lib
+      Paths_week9
+  hs-source-dirs:
+      src
+  ghc-options: -rtsopts
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
