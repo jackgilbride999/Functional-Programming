@@ -42,9 +42,7 @@ handleInput :: Chan Double -> IO()
 handleInput channel = do
     userInput <- getLine
     case userInput of
-        "quit" -> do
-            --chanContents <- getChanContents channel               -- ### Uncomment the line to the left to print the contents of the channel before quitting. This means that the program will wait for the threads to terminate, so that it can print the results, before it terminates.
-            print chanContents
+        "quit" -> return () -- do chanContents <- getChanContents channel; print chanContents        -- ### Delete return () and uncomment the lines to the left to print the contents of the channel before quitting. This means that the program will wait for the threads to terminate, so that it can print the results, before it terminates.
         _ -> do
             case userInput of
                 "result" -> do
