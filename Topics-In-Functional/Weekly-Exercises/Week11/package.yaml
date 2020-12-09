@@ -1,6 +1,6 @@
-name:                week10
+name:                week11
 version:             0.1.0.0
-github:              "jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week10"
+github:              "jackgilbride999/Topics-In-Functional/Weekly-Exercises/Week11"
 license:             BSD3
 author:              "Jack Gilbride"
 copyright:           "(c) 2020 Jack Gilbride"
@@ -20,8 +20,8 @@ dependencies:
 - base >= 4.7 && < 5
 
 executables:
-  week10: 
-    main: week10.hs
+  week11: 
+    main: week11.hs
 
 # GThese options are global (because they are not indented into an 'executables' stanza)
 source-dirs: src
