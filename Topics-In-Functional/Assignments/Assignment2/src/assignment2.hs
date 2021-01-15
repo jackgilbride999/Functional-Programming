@@ -32,7 +32,6 @@ calculator window = do
     buttonDiv <- button # set text "÷"
     buttonEquals <- button # set text "="
     buttonClear <- button # set text "C"
-    accumulatorString <- ""
     getBody window #+ [
         grid [
             [element button1, element button2, element button3, element buttonAdd],
