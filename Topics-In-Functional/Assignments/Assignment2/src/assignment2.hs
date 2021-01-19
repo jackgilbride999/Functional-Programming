@@ -9,6 +9,7 @@
     simple expression evaluator we saw in class).
 -}
 import Graphics.UI.Threepenny
+import Board
 
 main = do
  startGUI defaultConfig calculator
