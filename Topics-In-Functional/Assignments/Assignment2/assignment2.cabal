@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d3a9976518f93fafcaa8c006d8c58b0a64bb26e618948d7d600035717be271ff
+-- hash: a7fe68cbcd8f73edb628b5639cc95957a60d0825488c4e1eac1fe14ea682142c
 
 name:           assignment2
 version:        0.1.0.0
@@ -33,6 +33,7 @@ executable assignment2
   ghc-options: -rtsopts
   build-depends:
       base >=4.7 && <5
+    , random
     , threepenny-gui
     , vector
   default-language: Haskell2010
