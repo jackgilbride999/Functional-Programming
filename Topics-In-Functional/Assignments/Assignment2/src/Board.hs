@@ -1,27 +1,31 @@
-module Board(
+module Board (
     Board,
-    createBoard, getCellValue, updateCellValue
+    getCellValue, 
+    initializeBoard
 ) where
 
 import Data.Vector
 import System.Random
 
+type Proximity = Int
+
 data Board = Board {
-    cells :: Vector (Vector Int),
+    cells :: Vector (Vector Proximity),
     width :: Int,
     height :: Int
 }
 
-mine = -1 :: Int
-blank = 0 :: Int
+mine = -1 :: Proximity
+blank = 0 :: Proximity
 
-createBoard :: Int -> Int -> Board
-createBoard width height = Board (generate width (\_ -> Data.Vector.replicate height mine)) width height
+createEmptyBoard :: Int -> Int -> Board
+createEmptyBoard width height = Board (generate width (\_ -> Data.Vector.replicate height mine)) width height
 
-getCellValue :: (Int, Int) -> Board -> Int
+-- todo add checks to see if outside of board
+getCellValue :: (Int, Int) -> Board -> Proximity
 getCellValue (x,y) board = (cells board) ! x ! y
 
-updateCellValue :: (Int, Int) -> Board -> Int -> Board
+updateCellValue :: (Int, Int) -> Board -> Proximity -> Board
 updateCellValue (x, y) board value = 
     let 
         newRows = update ((cells board) ! x) (singleton (y, value)) -- update row x with the value
@@ -62,5 +66,5 @@ populateBoard board numMines generator =
 
 initializeBoard :: Int -> Int -> Int -> StdGen -> Board
 initializeBoard width height numMines generator = 
-    let emptyBoard = createBoard width height
+    let emptyBoard = createEmptyBoard width height
     in populateBoard emptyBoard numMines generator 
