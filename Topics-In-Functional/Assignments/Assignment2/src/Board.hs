@@ -8,18 +8,29 @@ import Data.Vector
 import System.Random
 
 type Proximity = Int
+data CellStatus = Visible | Hidden | Flagged deriving (Eq, Show)
 
 data Board = Board {
     cells :: Vector (Vector Proximity),
+    statuses :: Vector (Vector CellStatus),
     width :: Int,
     height :: Int
 }
 
-mine = -1 :: Proximity
-blank = 0 :: Proximity
+mine = -1           :: Proximity
+blank = 0           :: Proximity
+
+visible = Visible   :: CellStatus
+hidden = Hidden     :: CellStatus
+flagged = Flagged   :: CellStatus
 
 createEmptyBoard :: Int -> Int -> Board
-createEmptyBoard width height = Board (generate width (\_ -> Data.Vector.replicate height mine)) width height
+createEmptyBoard width height = Board {
+    cells = (generate width (\_ -> Data.Vector.replicate height mine)),
+    statuses = (generate width (\_ -> Data.Vector.replicate height Hidden)),
+    width = width,
+    height = height
+}
 
 -- todo add checks to see if outside of board
 getCellValue :: (Int, Int) -> Board -> Proximity
@@ -30,10 +41,17 @@ updateCellValue (x, y) board value =
     let 
         newRows = update ((cells board) ! x) (singleton (y, value)) -- update row x with the value
         newCells = update (cells board) (singleton (x, newRows))    -- update the cells with the new row x
-    in Board newCells (width board) (height board)                  -- update the board with the new cells
+    in board {cells = newCells} -- update the board with the new cells
+
+isInBoard :: (Int, Int) -> Board -> Bool
+isInBoard (x, y) board = 
+    x >= 0 && x < width board && y >= 0 && y < height board
 
 incrementCellValue :: (Int, Int) -> Board -> Board
-incrementCellValue coords board = updateCellValue coords board $ (getCellValue coords board) + 1
+incrementCellValue coords board = 
+    if isInBoard coords board
+    then updateCellValue coords board $ (getCellValue coords board) + 1
+    else board
 
 updateAdjacentCells :: (Int, Int) -> Board -> Board
 updateAdjacentCells (x,y) board = incrementCells [(x-1, y-1), (x,y-1), (x+1, y-1), (x-1, y), (x+1, y), (x-1, y+1), (x,y+1), (x+1, y+1)] board
