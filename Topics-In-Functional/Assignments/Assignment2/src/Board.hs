@@ -82,7 +82,7 @@ populateBoard board numMines generator =
                     let plantedBoard = plantMine (randomX, randomY) board  
                     in populateBoard plantedBoard (numMines-1) newerGenerator
 
-initializeBoard :: Int -> Int -> Int -> StdGen -> Board
-initializeBoard width height numMines generator = 
+initializeBoard :: Int -> Int -> Int -> IO Board
+initializeBoard width height numMines = 
     let emptyBoard = createEmptyBoard width height
-    in populateBoard emptyBoard numMines generator 
+    in return $ populateBoard emptyBoard numMines (mkStdGen 5) 
