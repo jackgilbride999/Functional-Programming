@@ -1,7 +1,11 @@
 module Board (
     Board,
+    CellStatus,
+    visible,
+    flagged,
     getCellValue, 
-    initializeBoard
+    initializeBoard,
+    updateCellStatus
 ) where
 
 import Data.Vector
@@ -26,20 +30,20 @@ flagged = Flagged   :: CellStatus
 
 createEmptyBoard :: Int -> Int -> Board
 createEmptyBoard width height = Board {
-    cells = (generate width (\_ -> Data.Vector.replicate height mine)),
-    statuses = (generate width (\_ -> Data.Vector.replicate height Hidden)),
+    cells = generate width (\_ -> Data.Vector.replicate height mine),
+    statuses = generate width (\_ -> Data.Vector.replicate height Hidden),
     width = width,
     height = height
 }
 
 -- todo add checks to see if outside of board
 getCellValue :: (Int, Int) -> Board -> Proximity
-getCellValue (x,y) board = (cells board) ! x ! y
+getCellValue (x,y) board = cells board ! x ! y
 
 updateCellValue :: (Int, Int) -> Board -> Proximity -> Board
 updateCellValue (x, y) board value = 
     let 
-        newRows = update ((cells board) ! x) (singleton (y, value)) -- update row x with the value
+        newRows = update (cells board ! x) (singleton (y, value)) -- update row x with the value
         newCells = update (cells board) (singleton (x, newRows))    -- update the cells with the new row x
     in board {cells = newCells} -- update the board with the new cells
 
@@ -50,7 +54,7 @@ isInBoard (x, y) board =
 incrementCellValue :: (Int, Int) -> Board -> Board
 incrementCellValue coords board = 
     if isInBoard coords board
-    then updateCellValue coords board $ (getCellValue coords board) + 1
+    then updateCellValue coords board $ getCellValue coords board + 1
     else board
 
 updateAdjacentCells :: (Int, Int) -> Board -> Board
@@ -73,8 +77,8 @@ populateBoard :: Board -> Int -> StdGen -> Board
 populateBoard board 0 _ = board
 populateBoard board numMines generator =
     let 
-        (randomX, newGenerator) = randomR (0, (width board)-1) generator
-        (randomY, newerGenerator) = randomR (0, (height board)-1) newGenerator
+        (randomX, newGenerator) = randomR (0, width board-1) generator
+        (randomY, newerGenerator) = randomR (0, height board-1) newGenerator
         in
             if getCellValue (randomX, randomY) board == mine
                 then populateBoard board numMines newerGenerator
@@ -86,3 +90,10 @@ initializeBoard :: Int -> Int -> Int -> IO Board
 initializeBoard width height numMines = 
     let emptyBoard = createEmptyBoard width height
     in return $ populateBoard emptyBoard numMines (mkStdGen 5) 
+
+updateCellStatus :: (Int, Int) -> Board -> CellStatus -> IO Board
+updateCellStatus (x, y) board status = 
+    let 
+        newRows = update (statuses board ! x) (singleton (y, status)) -- update row x with the value
+        newStatuses = update (statuses board) (singleton (x, newRows))    -- update the cells with the new row x
+    in return board {statuses = newStatuses} -- update the board with the new cells

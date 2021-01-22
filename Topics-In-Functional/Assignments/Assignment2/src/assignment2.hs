@@ -10,7 +10,6 @@ data Modes = Mine | Flag
 
 main :: IO () 
 main = do
-    board <- initializeBoard 20 20 10
     startGUI defaultConfig setup
 
 drawLine :: Element -> (Point, Point) -> UI ()
@@ -34,12 +33,14 @@ drawHorizontalLines canvas (x, y) cellHeight count = do
                                                     when (count > 0) $ 
                                                         drawHorizontalLines canvas (x, y + cellHeight) cellHeight (count - 1)
 
-detectClickedCell :: Point -> Int -> (Int, Int)
-detectClickedCell (x,y) cellSize = (floor (x / fromIntegral cellSize),
+detectClickedCell :: Point -> Int -> IO (Int, Int)
+detectClickedCell (x,y) cellSize = return (floor (x / fromIntegral cellSize),
                                         floor (y / fromIntegral cellSize))
 
 setup window = do
     return window # set title "Minesweeper"
+
+    board <- liftIO $ initializeBoard 20 20 10
 
     canvas <- canvas
         # set height 400
@@ -78,9 +79,12 @@ setup window = do
             Mine -> do
                 canvas # set' fillStyle (htmlColor "black")
                 canvas # fillRect (x, y) 100 100
-                getBody window #+ [string "pressed"]
-            
+                coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
+                board <- liftIO $ updateCellStatus coords board visible
+                getBody window #+ [string $ show coords]
             Flag -> do
                 canvas # set' fillStyle (htmlColor "white")
                 canvas # fillRect (x, y) 100 100
-                getBody window #+ [string "flag"]
+                coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
+                board <- liftIO $ updateCellStatus coords board flagged 
+                getBody window #+ [string $ show coords]
