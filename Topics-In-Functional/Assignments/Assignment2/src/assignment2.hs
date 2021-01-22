@@ -2,6 +2,7 @@ import Graphics.UI.Threepenny
 import Board
 import Data.IORef
 import System.Random
+import Control.Monad
 
 canvasSize = 400 :: Double
 
@@ -13,28 +14,25 @@ main = do
     startGUI defaultConfig setup
 
 drawLine :: Element -> (Point, Point) -> UI ()
-drawLine canvas (startPoint, endPoint) = do
+drawLine canvas (x1y1, x2y2) = do
     beginPath canvas
-    moveTo startPoint canvas
-    lineTo endPoint canvas
+    moveTo x1y1 canvas
+    lineTo x2y2 canvas
     closePath canvas
     stroke canvas
 
 drawVerticalLines :: Element -> Point -> Double -> Double -> UI ()
 drawVerticalLines canvas (x, y) cellWidth count = do
                                                     drawLine canvas ((x, 0), (x, canvasSize))
-                                                    if count > 0 then
+                                                    when (count > 0) $
                                                         drawVerticalLines canvas (x+cellWidth, y) cellWidth (count - 1)
-                                                    else
-                                                        return ()
+
 
 drawHorizontalLines :: Element -> Point -> Double -> Double -> UI ()
 drawHorizontalLines canvas (x, y) cellHeight count = do
                                                     drawLine canvas ((0, y), (canvasSize, y))
-                                                    if count > 0 then 
+                                                    when (count > 0) $ 
                                                         drawHorizontalLines canvas (x, y + cellHeight) cellHeight (count - 1)
-                                                    else
-                                                        return ()
 
 detectClickedCell :: Point -> Int -> (Int, Int)
 detectClickedCell (x,y) cellSize = (floor (x / fromIntegral cellSize),
