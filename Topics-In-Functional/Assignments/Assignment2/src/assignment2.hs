@@ -33,6 +33,18 @@ drawHorizontalLines canvas (x, y) cellHeight count = do
                                                     when (count > 0) $ 
                                                         drawHorizontalLines canvas (x, y + cellHeight) cellHeight (count - 1)
 
+drawCell :: Element -> Board -> (Int, Int) -> Double -> Double -> UI ()
+drawCell canvas board (x, y) cellWidth cellHeight = do
+    let
+        canvasX = (fromIntegral x * cellWidth) + cellWidth / 2
+        canvasY = fromIntegral y * cellHeight + cellHeight * 0.75
+        in fillText "v" (canvasX, canvasY) canvas
+
+-- drawBoard :: Element -> Board -> 
+-- get : forall x i o . ReadWriteAttr x i o -> x -> UI o
+-- height : WriteAttr Element Int
+-- canvas : Element
+
 detectClickedCell :: Point -> Int -> IO (Int, Int)
 detectClickedCell (x,y) cellSize = return (floor (x / fromIntegral cellSize),
                                         floor (y / fromIntegral cellSize))
@@ -46,6 +58,7 @@ setup window = do
         # set height 400
         # set width 400
         # set style [("border", "solid black 1px"), ("background", "#eee")]
+        # set textAlign Center 
 
     mode <- liftIO $ newIORef Mine
     pos <- liftIO $ newIORef (0, 0)
@@ -77,14 +90,12 @@ setup window = do
         m <- liftIO $ readIORef mode
         case m of
             Mine -> do
-                canvas # set' fillStyle (htmlColor "black")
-                canvas # fillRect (x, y) 100 100
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
                 board <- liftIO $ updateCellStatus coords board visible
+                drawCell canvas board coords (400 / 20) (400 / 20)
                 getBody window #+ [string $ show coords]
             Flag -> do
-                canvas # set' fillStyle (htmlColor "white")
-                canvas # fillRect (x, y) 100 100
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
                 board <- liftIO $ updateCellStatus coords board flagged 
+                drawCell canvas board coords (400 / 20) (400 / 20)
                 getBody window #+ [string $ show coords]
