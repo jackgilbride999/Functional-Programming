@@ -35,13 +35,7 @@ drawHorizontalLines canvas (x, y) cellHeight count = do
 
 drawCells :: Element -> Board -> Double -> Double -> UI ()
 drawCells canvas board cellWidth cellHeight = 
-    drawCellsRecursive $ [drawCell canvas board cellWidth cellHeight (columnIndices, rowIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
-
-drawCellsRecursive :: [UI ()] -> UI ()
-drawCellsRecursive [] = return ()
-drawCellsRecursive (x:xs) = do
-    x
-    drawCellsRecursive xs
+    sequence_  $ [drawCell canvas board cellWidth cellHeight (columnIndices, rowIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
 
 drawCell :: Element -> Board -> Double -> Double -> (Int, Int) -> UI ()
 drawCell canvas board cellWidth cellHeight (x, y) = do
