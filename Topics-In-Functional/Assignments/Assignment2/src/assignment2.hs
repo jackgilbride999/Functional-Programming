@@ -33,17 +33,30 @@ drawHorizontalLines canvas (x, y) cellHeight count = do
                                                     when (count > 0) $ 
                                                         drawHorizontalLines canvas (x, y + cellHeight) cellHeight (count - 1)
 
-drawCell :: Element -> Board -> (Int, Int) -> Double -> Double -> UI ()
-drawCell canvas board (x, y) cellWidth cellHeight = do
+drawCells :: Element -> Board -> Double -> Double -> UI ()
+drawCells canvas board cellWidth cellHeight = 
+    drawCellsRecursive $ [drawCell canvas board cellWidth cellHeight (columnIndices, rowIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
+
+drawCellsRecursive :: [UI ()] -> UI ()
+drawCellsRecursive [] = return ()
+drawCellsRecursive (x:xs) = do
+    x
+    drawCellsRecursive xs
+
+drawCell :: Element -> Board -> Double -> Double -> (Int, Int) -> UI ()
+drawCell canvas board cellWidth cellHeight (x, y) = do
     let
         canvasX = (fromIntegral x * cellWidth) + cellWidth / 2
         canvasY = fromIntegral y * cellHeight + cellHeight * 0.75
-        in fillText "v" (canvasX, canvasY) canvas
+        cellValue = getCellValue (x, y) board
+        cellStatus = getCellStatus (x, y) board
+        in
+            if cellStatus == visible then
+            fillText (show cellValue) (canvasX, canvasY) canvas
+            else if cellStatus == flagged 
+                then fillText "F" (canvasX, canvasY) canvas
+                else return ()
 
--- drawBoard :: Element -> Board -> 
--- get : forall x i o . ReadWriteAttr x i o -> x -> UI o
--- height : WriteAttr Element Int
--- canvas : Element
 
 detectClickedCell :: Point -> Int -> IO (Int, Int)
 detectClickedCell (x,y) cellSize = return (floor (x / fromIntegral cellSize),
@@ -52,16 +65,16 @@ detectClickedCell (x,y) cellSize = return (floor (x / fromIntegral cellSize),
 setup window = do
     return window # set title "Minesweeper"
 
-    board <- liftIO $ initializeBoard 20 20 10
-
     canvas <- canvas
-        # set height 400
-        # set width 400
+        # set Graphics.UI.Threepenny.height 400
+        # set Graphics.UI.Threepenny.width 400
         # set style [("border", "solid black 1px"), ("background", "#eee")]
         # set textAlign Center 
 
     mode <- liftIO $ newIORef Mine
     pos <- liftIO $ newIORef (0, 0)
+    board <- liftIO $ newIORef $ initializeBoard 20 20 10
+
 
     mineMode <- button #+ [string "Mine"]
     flagMode <- button #+ [string "Flag"]
@@ -88,14 +101,18 @@ setup window = do
     on click canvas $ \_ -> do
         (x, y) <- liftIO $ readIORef pos
         m <- liftIO $ readIORef mode
+        boardValue <- liftIO $ readIORef board
         case m of
             Mine -> do
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
-                board <- liftIO $ updateCellStatus coords board visible
-                drawCell canvas board coords (400 / 20) (400 / 20)
-                getBody window #+ [string $ show coords]
+                liftIO $ writeIORef board (updateCellStatus coords boardValue visible)
+                return ()
             Flag -> do
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
-                board <- liftIO $ updateCellStatus coords board flagged 
-                drawCell canvas board coords (400 / 20) (400 / 20)
-                getBody window #+ [string $ show coords]
+                liftIO $ writeIORef board (updateCellStatus coords boardValue flagged)
+                return ()
+        clearCanvas canvas
+        drawVerticalLines canvas (0, 0) (400 / 20) 20
+        drawHorizontalLines canvas (0, 0) (400 / 20) 20
+        boardValue <- liftIO $ readIORef board
+        drawCells canvas boardValue (400 / 20) (400 / 20)

@@ -1,11 +1,16 @@
 module Board (
     Board,
     CellStatus,
+    cells,
+    statuses,
+    height,
+    width,
     visible,
     flagged,
     getCellValue, 
     initializeBoard,
-    updateCellStatus
+    updateCellStatus,
+    getCellStatus
 ) where
 
 import Data.Vector
@@ -30,7 +35,7 @@ flagged = Flagged   :: CellStatus
 
 createEmptyBoard :: Int -> Int -> Board
 createEmptyBoard width height = Board {
-    cells = generate width (\_ -> Data.Vector.replicate height mine),
+    cells = generate width (\_ -> Data.Vector.replicate height blank),
     statuses = generate width (\_ -> Data.Vector.replicate height Hidden),
     width = width,
     height = height
@@ -38,7 +43,11 @@ createEmptyBoard width height = Board {
 
 -- todo add checks to see if outside of board
 getCellValue :: (Int, Int) -> Board -> Proximity
-getCellValue (x,y) board = cells board ! x ! y
+getCellValue (x,y) board = 
+    if isInBoard (x,y) board then
+        cells board ! x ! y
+    else
+        -5
 
 updateCellValue :: (Int, Int) -> Board -> Proximity -> Board
 updateCellValue (x, y) board value = 
@@ -86,14 +95,17 @@ populateBoard board numMines generator =
                     let plantedBoard = plantMine (randomX, randomY) board  
                     in populateBoard plantedBoard (numMines-1) newerGenerator
 
-initializeBoard :: Int -> Int -> Int -> IO Board
+initializeBoard :: Int -> Int -> Int -> Board
 initializeBoard width height numMines = 
     let emptyBoard = createEmptyBoard width height
-    in return $ populateBoard emptyBoard numMines (mkStdGen 5) 
+    in populateBoard emptyBoard numMines (mkStdGen 5) 
 
-updateCellStatus :: (Int, Int) -> Board -> CellStatus -> IO Board
+updateCellStatus :: (Int, Int) -> Board -> CellStatus -> Board
 updateCellStatus (x, y) board status = 
     let 
         newRows = update (statuses board ! x) (singleton (y, status)) -- update row x with the value
         newStatuses = update (statuses board) (singleton (x, newRows))    -- update the cells with the new row x
-    in return board {statuses = newStatuses} -- update the board with the new cells
+    in board {statuses = newStatuses} -- update the board with the new cells
+
+getCellStatus :: (Int, Int) -> Board -> CellStatus
+getCellStatus (x, y) board = statuses board ! x ! y
