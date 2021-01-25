@@ -11,7 +11,8 @@ module Board (
     initializeBoard,
     updateCellStatus,
     getCellStatus,
-    expandCells
+    expandCells,
+    mine
 ) where
 
 import Data.Vector
