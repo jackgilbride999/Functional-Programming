@@ -10,7 +10,8 @@ module Board (
     getCellValue, 
     initializeBoard,
     updateCellStatus,
-    getCellStatus
+    getCellStatus,
+    expandCells
 ) where
 
 import Data.Vector
@@ -109,3 +110,13 @@ updateCellStatus (x, y) board status =
 
 getCellStatus :: (Int, Int) -> Board -> CellStatus
 getCellStatus (x, y) board = statuses board ! x ! y
+
+expandCells :: (Int, Int) -> Board -> Board
+expandCells (x, y) board =
+    if isInBoard (x, y) board && getCellStatus (x, y) board /= visible
+    then 
+        if getCellValue (x, y) board == blank then
+            let updatedBoard = updateCellStatus (x, y) board visible
+            in expandCells (x-1, y) $ expandCells (x, y-1) $ expandCells (x+1, y) $ expandCells (x, y+1) updatedBoard
+        else updateCellStatus (x, y) board visible
+    else board

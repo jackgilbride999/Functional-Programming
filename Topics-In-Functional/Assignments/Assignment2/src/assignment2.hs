@@ -67,7 +67,7 @@ setup window = do
 
     mode <- liftIO $ newIORef Mine
     pos <- liftIO $ newIORef (0, 0)
-    board <- liftIO $ newIORef $ initializeBoard 20 20 10
+    board <- liftIO $ newIORef $ initializeBoard 20 20 50
 
 
     mineMode <- button #+ [string "Mine"]
@@ -100,6 +100,7 @@ setup window = do
             Mine -> do
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
                 liftIO $ writeIORef board (updateCellStatus coords boardValue visible)
+                liftIO $ writeIORef board (expandCells coords boardValue)
                 return ()
             Flag -> do
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
