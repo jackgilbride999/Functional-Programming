@@ -99,7 +99,8 @@ setup window = do
 
     mode <- liftIO $ newIORef Mine
     pos <- liftIO $ newIORef (0, 0)
-    board <- liftIO $ newIORef $ initializeBoard 20 20 50
+    stdGen <- liftIO newStdGen
+    board <- liftIO $ newIORef $ initializeBoard 20 20 50 stdGen
 
 
     mineMode <- button #+ [string "Mine"]

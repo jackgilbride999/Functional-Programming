@@ -1,6 +1,6 @@
 module Board (
     Board,
-    CellStatus,
+    CellStatus (..),
     cells,
     statuses,
     height,
@@ -97,10 +97,10 @@ populateBoard board numMines generator =
                     let plantedBoard = plantMine (randomX, randomY) board  
                     in populateBoard plantedBoard (numMines-1) newerGenerator
 
-initializeBoard :: Int -> Int -> Int -> Board
-initializeBoard width height numMines = 
+initializeBoard :: Int -> Int -> Int -> StdGen -> Board
+initializeBoard width height numMines stdGen = 
     let emptyBoard = createEmptyBoard width height
-    in populateBoard emptyBoard numMines (mkStdGen 5) 
+    in populateBoard emptyBoard numMines stdGen 
 
 updateCellStatus :: (Int, Int) -> Board -> CellStatus -> Board
 updateCellStatus (x, y) board status = 
