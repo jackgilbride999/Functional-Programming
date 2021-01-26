@@ -12,20 +12,23 @@ module Board (
     updateCellStatus,
     getCellStatus,
     expandCells,
-    mine
+    mine,
+    questioned
 ) where
 
 import Data.Vector
 import System.Random
 
 type Proximity = Int
-data CellStatus = Visible | Hidden | Flagged deriving (Eq, Show)
+data CellStatus = Visible | Hidden | Flagged | Questioned deriving (Eq, Show)
+data GameState = Incomplete | Won | Lost deriving (Eq, Show)
 
 data Board = Board {
     cells :: Vector (Vector Proximity),
     statuses :: Vector (Vector CellStatus),
     width :: Int,
-    height :: Int
+    height :: Int,
+    state :: GameState
 }
 
 mine = -1           :: Proximity
@@ -34,6 +37,11 @@ blank = 0           :: Proximity
 visible = Visible   :: CellStatus
 hidden = Hidden     :: CellStatus
 flagged = Flagged   :: CellStatus
+questioned = Questioned  :: CellStatus
+
+incomplete = Incomplete :: GameState
+won = Won :: GameState
+lost = Lost :: GameState
 
 createEmptyBoard :: Int -> Int -> Board
 createEmptyBoard width height = Board {
@@ -121,3 +129,18 @@ expandCells (x, y) board =
             in expandCells (x-1, y) $ expandCells (x, y-1) $ expandCells (x+1, y) $ expandCells (x, y+1) updatedBoard
         else updateCellStatus (x, y) board visible
     else board
+
+updateGameState :: Board -> Board
+updateGameState board = 
+    let coordsList = [(columnIndices, rowIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
+    in updateGameStateRecursive board coordsList
+
+updateGameStateRecursive :: Board -> [(Int, Int)] -> Board
+updateGameStateRecursive board [] = board {state = Won}
+updateGameStateRecursive board (coords:coordsList) = 
+    if getCellStatus coords board == visible && getCellValue coords board == mine
+    then board {state = lost}
+    else 
+        if getCellStatus coords board == hidden && getCellValue coords board /= mine
+        then board {state = incomplete}
+        else updateGameStateRecursive board coordsList

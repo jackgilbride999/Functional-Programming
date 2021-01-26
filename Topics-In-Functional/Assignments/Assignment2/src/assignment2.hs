@@ -6,7 +6,7 @@ import Control.Monad
 
 canvasSize = 400 :: Double
 
-data Modes = Mine | Flag
+data Modes = Mine | Flag | Unsure
 
 main :: IO () 
 main = do
@@ -51,9 +51,12 @@ drawCell canvas board cellWidth cellHeight (x, y) = do
                 if cellValue == mine then
                     drawMine canvas (canvasX, canvasY) (digitX, digitY) cellWidth cellHeight
                 else drawDigit canvas (digitX, digitY) cellValue
-            else if cellStatus == flagged 
-                then drawFlag canvas (canvasX, canvasY) (digitX, digitY) cellWidth cellHeight
-                else return ()
+            else if cellStatus == flagged then 
+                drawFlag canvas (canvasX, canvasY) (digitX, digitY) cellWidth cellHeight
+            else if cellStatus == questioned  then
+                drawUnsure canvas (canvasX, canvasY) (digitX, digitY) cellWidth cellHeight
+            else
+                return ()
 
 drawDigit :: Element -> (Double , Double) -> Int -> UI()
 drawDigit canvas canvasCoords digit = do
@@ -83,6 +86,12 @@ drawFlag canvas topLeftCoords centerCoords cellWidth cellHeight = do
     set' fillStyle (htmlColor "white") canvas
     fillText "F" centerCoords canvas
 
+drawUnsure :: Element -> (Double, Double) -> (Double, Double) -> Double -> Double -> UI()
+drawUnsure canvas topLeftCoords centerCoords cellWidth cellHeight = do
+    set' fillStyle (htmlColor "green") canvas
+    fillRect topLeftCoords cellWidth cellHeight canvas
+    set' fillStyle (htmlColor "white") canvas
+    fillText "?" centerCoords canvas
 
 detectClickedCell :: Point -> Int -> IO (Int, Int)
 detectClickedCell (x,y) cellSize = return (floor (x / fromIntegral cellSize),
@@ -102,16 +111,16 @@ setup window = do
     stdGen <- liftIO newStdGen
     board <- liftIO $ newIORef $ initializeBoard 20 20 50 stdGen
 
-
     mineMode <- button #+ [string "Mine"]
     flagMode <- button #+ [string "Flag"]
+    unsureMode <- button #+ [string "Unsure"]
     clearMode <- button #+ [string "Clear"]
 
     drawVerticalLines canvas (0, 0) (400 / 20) 20
     drawHorizontalLines canvas (0, 0) (400 / 20) 20
 
     getBody window #+
-        [column [element canvas], element mineMode, element flagMode, element clearMode]
+        [column [element canvas], element mineMode, element flagMode, element unsureMode, element clearMode]
 
     on click clearMode $ const $ 
         canvas # clearCanvas
@@ -121,6 +130,9 @@ setup window = do
 
     on click flagMode $ \_ -> do
         liftIO $ writeIORef mode Flag
+
+    on click unsureMode $ \_ -> do
+        liftIO $ writeIORef mode Unsure
 
     on mousemove canvas $ \xy -> do
         liftIO $ writeIORef pos xy
@@ -139,6 +151,10 @@ setup window = do
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
                 liftIO $ writeIORef board (updateCellStatus coords boardValue flagged)
                 return ()
+            Unsure -> do
+                coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
+                liftIO $ writeIORef board (updateCellStatus coords boardValue questioned)
+                return ()                
         clearCanvas canvas
         boardValue <- liftIO $ readIORef board
         drawCells canvas boardValue (400 / 20) (400 / 20)
