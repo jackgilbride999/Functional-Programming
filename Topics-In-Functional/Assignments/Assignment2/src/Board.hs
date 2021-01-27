@@ -15,14 +15,28 @@ module Board (
     lost,
     updateGameState
 ) where
-
 import Data.Vector
 import System.Random
 
+{-
+    The underlying data types for the board.
+        Proximity represents the number of bombs adjacent to a cell, and is equivalent to an Int.
+        CellStatus represents how the cell will be presented to the viewer. A cell may be Visible to or Hidden from the user. 
+            Additionally the user may Flag the cell, or place an "Unsure" symbol on it. These statuses are also represented in the data type.
+        GameState represents the overall state of the game. A game is complete when the user has Won or Lost. If they have not reached either
+            of these states, the GameState is Incomplete.
+        The Board structure, represented by a record type, containing all of the information for the board. Including:
+            cells - a 2D structure to store if each cell in the board is a bomb, and otherwise the number of adjacent cells that are bombs.
+                Vectors were chosen instead of Lists as they are easier and clearer to index into, and a 2D structure requires a lot of indexing.
+            statuses - a 2D structure to store the CellStatus of each game in the board. Each element of statuses corresponds to the equivalent 
+                element in cells.
+            width - the number of columns in the board (the size of the outer vector in cells and statuses).
+            height - the number of rows in the board (the size of the inner vectors in cells and statuses).
+            state - the value of the GameState.
+-}
 type Proximity = Int
 data CellStatus = Visible | Hidden | Flagged | Questioned deriving (Eq, Show)
 data GameState = Incomplete | Won | Lost deriving (Eq, Show)
-
 data Board = Board {
     cells :: Vector (Vector Proximity),
     statuses :: Vector (Vector CellStatus),
@@ -31,9 +45,11 @@ data Board = Board {
     state :: GameState
 }
 
+-- A mine cell and a blank cell represented by a function name, more intuitive than a magic number
 mine = -1           :: Proximity
 blank = 0           :: Proximity
 
+-- Functions to access data constructors of CellStatus and GameState, in case their underlying representation is changed later on.
 visible = Visible   :: CellStatus
 hidden = Hidden     :: CellStatus
 flagged = Flagged   :: CellStatus
@@ -136,7 +152,6 @@ updateGameState board =
     let coordsList = [(columnIndices, rowIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
     in updateGameStateRecursive board won coordsList
 
--- wrong::
 updateGameStateRecursive :: Board -> GameState -> [(Int, Int)] -> Board
 updateGameStateRecursive board state [] = board {state = state}
 updateGameStateRecursive board Incomplete (coords:coordsList) = 
