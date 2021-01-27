@@ -1,10 +1,6 @@
 module Board (
-    Board,
+    Board (..),
     CellStatus (..),
-    cells,
-    statuses,
-    height,
-    width,
     visible,
     flagged,
     getCellValue, 
@@ -13,7 +9,11 @@ module Board (
     getCellStatus,
     expandCells,
     mine,
-    questioned
+    questioned,
+    incomplete,
+    won,
+    lost,
+    updateGameState
 ) where
 
 import Data.Vector
@@ -48,7 +48,8 @@ createEmptyBoard width height = Board {
     cells = generate width (\_ -> Data.Vector.replicate height blank),
     statuses = generate width (\_ -> Data.Vector.replicate height Hidden),
     width = width,
-    height = height
+    height = height,
+    state = incomplete
 }
 
 -- todo add checks to see if outside of board
@@ -133,14 +134,20 @@ expandCells (x, y) board =
 updateGameState :: Board -> Board
 updateGameState board = 
     let coordsList = [(columnIndices, rowIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
-    in updateGameStateRecursive board coordsList
+    in updateGameStateRecursive board won coordsList
 
-updateGameStateRecursive :: Board -> [(Int, Int)] -> Board
-updateGameStateRecursive board [] = board {state = Won}
-updateGameStateRecursive board (coords:coordsList) = 
-    if getCellStatus coords board == visible && getCellValue coords board == mine
+-- wrong::
+updateGameStateRecursive :: Board -> GameState -> [(Int, Int)] -> Board
+updateGameStateRecursive board state [] = board {state = state}
+updateGameStateRecursive board Incomplete (coords:coordsList) = 
+   if getCellStatus coords board == visible && getCellValue coords board == mine
     then board {state = lost}
-    else 
-        if getCellStatus coords board == hidden && getCellValue coords board /= mine
-        then board {state = incomplete}
-        else updateGameStateRecursive board coordsList
+    else updateGameStateRecursive board Incomplete coordsList
+updateGameStateRecursive board Won (coords:coordsList) 
+    | getCellStatus coords board == visible && getCellValue coords board == mine
+        = board {state = lost}
+    | getCellStatus coords board == hidden && getCellValue coords board /= mine
+        = updateGameStateRecursive board Incomplete coordsList
+    | otherwise = 
+        updateGameStateRecursive board Won coordsList
+   

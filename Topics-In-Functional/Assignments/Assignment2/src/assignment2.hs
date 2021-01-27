@@ -109,7 +109,7 @@ setup window = do
     mode <- liftIO $ newIORef Mine
     pos <- liftIO $ newIORef (0, 0)
     stdGen <- liftIO newStdGen
-    board <- liftIO $ newIORef $ initializeBoard 20 20 50 stdGen
+    board <- liftIO $ newIORef $ initializeBoard 20 20 10 stdGen
 
     mineMode <- button #+ [string "Mine"]
     flagMode <- button #+ [string "Flag"]
@@ -144,8 +144,7 @@ setup window = do
         case m of
             Mine -> do
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
-                liftIO $ writeIORef board (updateCellStatus coords boardValue visible)
-                liftIO $ writeIORef board (expandCells coords boardValue)
+                liftIO $ writeIORef board (updateGameState (expandCells coords boardValue))
                 return ()
             Flag -> do
                 coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 20) 
@@ -157,6 +156,9 @@ setup window = do
                 return ()                
         clearCanvas canvas
         boardValue <- liftIO $ readIORef board
-        drawCells canvas boardValue (400 / 20) (400 / 20)
-        drawVerticalLines canvas (0, 0) (400 / 20) 20
-        drawHorizontalLines canvas (0, 0) (400 / 20) 20
+        if state boardValue == incomplete
+            then do
+                drawCells canvas boardValue (400 / 20) (400 / 20)
+                drawVerticalLines canvas (0, 0) (400 / 20) 20
+                drawHorizontalLines canvas (0, 0) (400 / 20) 20
+            else return ()
