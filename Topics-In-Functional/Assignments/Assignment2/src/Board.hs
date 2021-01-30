@@ -42,6 +42,7 @@ data Board = Board {
     statuses :: Vector (Vector CellStatus),
     width :: Int,
     height :: Int,
+    numMines :: Int,
     state :: GameState
 }
 
@@ -59,12 +60,13 @@ incomplete = Incomplete :: GameState
 won = Won :: GameState
 lost = Lost :: GameState
 
-createEmptyBoard :: Int -> Int -> Board
-createEmptyBoard width height = Board {
+createEmptyBoard :: Int -> Int -> Int -> Board
+createEmptyBoard width height numMines = Board {
     cells = generate width (\_ -> Data.Vector.replicate height blank),
     statuses = generate width (\_ -> Data.Vector.replicate height Hidden),
     width = width,
     height = height,
+    numMines = numMines,
     state = incomplete
 }
 
@@ -124,7 +126,7 @@ populateBoard board numMines generator =
 
 initializeBoard :: Int -> Int -> Int -> StdGen -> Board
 initializeBoard width height numMines stdGen = 
-    let emptyBoard = createEmptyBoard width height
+    let emptyBoard = createEmptyBoard width height numMines
     in populateBoard emptyBoard numMines stdGen 
 
 updateCellStatus :: (Int, Int) -> Board -> CellStatus -> Board
@@ -161,7 +163,7 @@ updateGameStateRecursive board Incomplete (coords:coordsList) =
 updateGameStateRecursive board Won (coords:coordsList) 
     | getCellStatus coords board == visible && getCellValue coords board == mine
         = board {state = lost}
-    | getCellStatus coords board == hidden && getCellValue coords board /= mine
+    | getCellStatus coords board /= visible && getCellValue coords board /= mine
         = updateGameStateRecursive board Incomplete coordsList
     | otherwise = 
         updateGameStateRecursive board Won coordsList
