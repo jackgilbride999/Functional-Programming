@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b4fd2664f7b7e3d15ee43a812e55c9e414bf38e73622f25f8632b5993f0a544a
+-- hash: dd588da447a2a3abd0321454721f6f869848f8bd3249c8a6612791ac5db29fd3
 
 name:           assignment2
 version:        0.1.0.0
@@ -25,6 +25,7 @@ source-repository head
 executable assignment2
   main-is: assignment2.hs
   other-modules:
+      AutoPlayer
       Board
       BoardCanvas
       Lib

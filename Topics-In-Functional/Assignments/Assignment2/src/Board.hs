@@ -13,7 +13,8 @@ module Board (
     incomplete,
     won,
     lost,
-    updateGameState
+    updateGameState,
+    hidden
 ) where
 import Data.Vector
 import System.Random

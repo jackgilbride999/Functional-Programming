@@ -1,5 +1,6 @@
 import Graphics.UI.Threepenny
 import Board
+import AutoPlayer
 import Data.IORef
 import System.Random
 import Control.Monad
@@ -136,24 +137,30 @@ playGame window numRows numCols numMines = do
     pos <- liftIO $ newIORef (0, 0)
     gameStarted <- liftIO $ newIORef False
 
-    mineMode <- button #+ [string "Mine"]
-    flagMode <- button #+ [string "Flag"]
-    unsureMode <- button #+ [string "Unsure"]
+    mineButton <- button #+ [string "Mine"]
+    flagButton <- button #+ [string "Flag"]
+    unsureButton <- button #+ [string "Unsure"]
+    autoPlayButton <- button #+ [string "AutoPlay"]
 
     drawVerticalLines canvas (0, 0) (canvasWidth / numCols) numCols
     drawHorizontalLines canvas (0, 0) (canvasHeight / numRows) numRows
 
     getBody window #+
-        [column [element canvas], element mineMode, element flagMode, element unsureMode]
+        [column [element canvas], element mineButton, element flagButton, element unsureButton, element autoPlayButton]
 
-    on click mineMode $ \_ -> do
+    on click mineButton $ \_ -> do
         liftIO $ writeIORef mode Mine
 
-    on click flagMode $ \_ -> do
+    on click flagButton $ \_ -> do
         liftIO $ writeIORef mode Flag
 
-    on click unsureMode $ \_ -> do
+    on click unsureButton $ \_ -> do
         liftIO $ writeIORef mode Unsure
+
+    on click autoPlayButton $ \_ -> do
+        boardValue <- liftIO $ readIORef board
+        updatedBoard <- liftIO $ autoPlayerMove boardValue
+        liftIO $ writeIORef board updatedBoard
 
     on mousemove canvas $ \xy -> do
         liftIO $ writeIORef pos xy
