@@ -141,7 +141,7 @@ getCellStatus (x, y) board = statuses board ! x ! y
 
 expandCells :: (Int, Int) -> Board -> Board
 expandCells (x, y) board =
-    if isInBoard (x, y) board && getCellStatus (x, y) board /= visible
+    if isInBoard (x, y) board && (getCellStatus (x, y) board == hidden || getCellStatus (x, y) board == questioned)
     then 
         if getCellValue (x, y) board == blank then
             let updatedBoard = updateCellStatus (x, y) board visible

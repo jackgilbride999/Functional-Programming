@@ -4,8 +4,6 @@ import Data.IORef
 import System.Random
 import Control.Monad
 
-canvasSize = 400 :: Double
-
 data Modes = Mine | Flag | Unsure
 data Difficulties = Beginner | Intermediate | Expert
 
@@ -23,14 +21,14 @@ drawLine canvas (x1y1, x2y2) = do
 
 drawVerticalLines :: Element -> Point -> Double -> Double -> UI ()
 drawVerticalLines canvas (x, y) cellWidth count = do
-                                                    drawLine canvas ((x, 0), (x, canvasSize))
+                                                    drawLine canvas ((x, 0), (x, canvasWidth))
                                                     when (count > 0) $
                                                         drawVerticalLines canvas (x+cellWidth, y) cellWidth (count - 1)
 
 
 drawHorizontalLines :: Element -> Point -> Double -> Double -> UI ()
 drawHorizontalLines canvas (x, y) cellHeight count = do
-                                                    drawLine canvas ((0, y), (canvasSize, y))
+                                                    drawLine canvas ((0, y), (canvasHeight, y))
                                                     when (count > 0) $ 
                                                         drawHorizontalLines canvas (x, y + cellHeight) cellHeight (count - 1)
 
@@ -98,6 +96,9 @@ detectClickedCell :: Point -> Int -> IO (Int, Int)
 detectClickedCell (x,y) cellSize = return (floor (x / fromIntegral cellSize),
                                         floor (y / fromIntegral cellSize))
 
+canvasWidth = 500 :: Double
+canvasHeight = 500 :: Double
+
 setup window = do
     return window # set title "Minesweeper"
 
@@ -105,45 +106,32 @@ setup window = do
     intermediateMode <- button #+ [string "Intermediate"]
     expertMode <- button #+ [string "Expert"]
 
-    boardWidth <- liftIO $ newIORef 0
-    boardHeight <- liftIO $ newIORef 0
-    numMines <- liftIO $ newIORef 0
-
     getBody window #+
         [element beginnerMode, element intermediateMode, element expertMode]
 
     on click beginnerMode $ \_ -> do
-        liftIO $ writeIORef boardWidth 8
-        liftIO $ writeIORef boardHeight 8
-        liftIO $ writeIORef numMines 10
         delete beginnerMode >> delete intermediateMode >> delete expertMode
-        playGame window boardWidth boardHeight numMines
+        playGame window 8 8 10
 
     on click intermediateMode $ \_ -> do
-        liftIO $ writeIORef boardWidth 16
-        liftIO $ writeIORef boardHeight 16
-        liftIO $ writeIORef numMines 40
         delete beginnerMode >> delete intermediateMode >> delete expertMode
-        playGame window boardWidth boardHeight numMines
+        playGame window 16 16 40
 
     on click expertMode $ \_ -> do
-        liftIO $ writeIORef boardWidth 24
-        liftIO $ writeIORef boardHeight 24
-        liftIO $ writeIORef numMines 99
         delete beginnerMode >> delete intermediateMode >> delete expertMode
-        playGame window boardWidth boardHeight numMines
+        playGame window 24 24 99
 
-playGame :: Window -> IORef Double -> IORef Double  -> IORef Int -> UI ()
-playGame window boardWidth boardHeight numMines = do
+playGame :: Window -> Double -> Double  -> Int -> UI ()
+playGame window numRows numCols numMines = do
 
     canvas <- canvas
-        # set Graphics.UI.Threepenny.height 400
-        # set Graphics.UI.Threepenny.width 400
+        # set Graphics.UI.Threepenny.height (floor canvasHeight)
+        # set Graphics.UI.Threepenny.width (floor canvasWidth)
         # set style [("border", "solid black 1px"), ("background", "#eee")]
         # set textAlign Center 
 
     stdGen <- liftIO newStdGen
-    board <- liftIO $ newIORef $ initializeBoard 16 16 40 stdGen
+    board <- liftIO $ newIORef $ initializeBoard (floor numRows) (floor numCols) numMines stdGen
     mode <- liftIO $ newIORef Mine
     pos <- liftIO $ newIORef (0, 0)
 
@@ -151,8 +139,8 @@ playGame window boardWidth boardHeight numMines = do
     flagMode <- button #+ [string "Flag"]
     unsureMode <- button #+ [string "Unsure"]
 
-    drawVerticalLines canvas (0, 0) (400 / 16) 16
-    drawHorizontalLines canvas (0, 0) (400 / 16) 16
+    drawVerticalLines canvas (0, 0) (canvasWidth / numCols) numCols
+    drawHorizontalLines canvas (0, 0) (canvasHeight / numRows) numRows
 
     getBody window #+
         [column [element canvas], element mineMode, element flagMode, element unsureMode]
@@ -175,32 +163,32 @@ playGame window boardWidth boardHeight numMines = do
         boardValue <- liftIO $ readIORef board
         case m of
             Mine -> do
-                coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 16) 
+                coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
                 liftIO $ writeIORef board (updateGameState (expandCells coords boardValue))
                 return ()
             Flag -> do
-                coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 16) 
+                coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
                 liftIO $ writeIORef board (updateCellStatus coords boardValue flagged)
                 return ()
             Unsure -> do
-                coords <- liftIO $ detectClickedCell (x, y) (400 `Prelude.div` 16) 
+                coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
                 liftIO $ writeIORef board (updateCellStatus coords boardValue questioned)
                 return ()                
         clearCanvas canvas
         boardValue <- liftIO $ readIORef board
         if state boardValue == incomplete
             then do
-                drawCells canvas boardValue (400 / 16) (400 / 16)
-                drawVerticalLines canvas (0, 0) (400 / 16) 16
-                drawHorizontalLines canvas (0, 0) (400 / 16) 16
+                drawCells canvas boardValue (canvasHeight / numRows) (canvasWidth / numCols)
+                drawVerticalLines canvas (0, 0) (canvasHeight / numCols) numCols
+                drawHorizontalLines canvas (0, 0) (canvasWidth / numRows) numRows
             else if state boardValue == won 
                 then do
                     set' fillStyle (htmlColor "green") canvas
-                    fillRect (0,0) 400 400 canvas
+                    fillRect (0,0) canvasHeight canvasWidth canvas
                     set' fillStyle (htmlColor "white") canvas
                     fillText "YOU WON" (0,0) canvas
                 else do
                     set' fillStyle (htmlColor "red") canvas
-                    fillRect (0,0) 400 400 canvas
+                    fillRect (0,0) canvasHeight canvasWidth canvas
                     set' fillStyle (htmlColor "white") canvas
                     fillText "YOU LOST" (0,0) canvas
