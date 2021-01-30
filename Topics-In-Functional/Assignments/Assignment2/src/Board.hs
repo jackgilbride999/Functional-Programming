@@ -111,23 +111,23 @@ plantMine coords board =
     let boardWithMinePlanted = updateCellValue coords board mine -- plant a mine at the coords
     in updateAdjacentCells coords boardWithMinePlanted           -- update adjecent cells
 
-populateBoard :: Board -> Int -> StdGen -> Board
-populateBoard board 0 _ = board
-populateBoard board numMines generator =
+populateBoard :: Board -> Int -> (Int, Int) -> StdGen -> Board
+populateBoard board 0 _ _ = board
+populateBoard board numMines coordsToSkip generator =
     let 
         (randomX, newGenerator) = randomR (0, width board-1) generator
         (randomY, newerGenerator) = randomR (0, height board-1) newGenerator
         in
-            if getCellValue (randomX, randomY) board == mine
-                then populateBoard board numMines newerGenerator
+            if getCellValue (randomX, randomY) board == mine || (randomX, randomY) == coordsToSkip
+                then populateBoard board numMines coordsToSkip newerGenerator
                 else 
                     let plantedBoard = plantMine (randomX, randomY) board  
-                    in populateBoard plantedBoard (numMines-1) newerGenerator
+                    in populateBoard plantedBoard (numMines-1) coordsToSkip newerGenerator
 
-initializeBoard :: Int -> Int -> Int -> StdGen -> Board
-initializeBoard width height numMines stdGen = 
+initializeBoard :: Int -> Int -> Int -> (Int, Int) -> StdGen -> Board
+initializeBoard width height numMines coordsToSkip stdGen = 
     let emptyBoard = createEmptyBoard width height numMines
-    in populateBoard emptyBoard numMines stdGen 
+    in populateBoard emptyBoard numMines coordsToSkip stdGen 
 
 updateCellStatus :: (Int, Int) -> Board -> CellStatus -> Board
 updateCellStatus (x, y) board status = 

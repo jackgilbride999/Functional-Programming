@@ -131,9 +131,10 @@ playGame window numRows numCols numMines = do
         # set textAlign Center 
 
     stdGen <- liftIO newStdGen
-    board <- liftIO $ newIORef $ initializeBoard (floor numRows) (floor numCols) numMines stdGen
+    board <- liftIO $ newIORef $ initializeBoard (floor numRows) (floor numCols) numMines (0, 0) stdGen
     mode <- liftIO $ newIORef Mine
     pos <- liftIO $ newIORef (0, 0)
+    gameStarted <- liftIO $ newIORef False
 
     mineMode <- button #+ [string "Mine"]
     flagMode <- button #+ [string "Flag"]
@@ -159,19 +160,24 @@ playGame window numRows numCols numMines = do
 
     on click canvas $ \_ -> do
         (x, y) <- liftIO $ readIORef pos
+        coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
+        boardValue <- liftIO $ readIORef board
+        started <- liftIO $ readIORef gameStarted
+        
+        when (not started && getCellValue coords boardValue == mine)
+                (liftIO $ writeIORef board (initializeBoard (floor numRows) (floor numCols) numMines coords stdGen))
+
+        liftIO $ writeIORef gameStarted True
         m <- liftIO $ readIORef mode
         boardValue <- liftIO $ readIORef board
         case m of
             Mine -> do
-                coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
                 liftIO $ writeIORef board (updateGameState (expandCells coords boardValue))
                 return ()
             Flag -> do
-                coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
                 liftIO $ writeIORef board (updateCellStatus coords boardValue flagged)
                 return ()
             Unsure -> do
-                coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
                 liftIO $ writeIORef board (updateCellStatus coords boardValue questioned)
                 return ()                
         clearCanvas canvas
