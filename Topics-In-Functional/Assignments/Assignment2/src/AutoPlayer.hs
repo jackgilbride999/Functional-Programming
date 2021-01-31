@@ -12,8 +12,8 @@ autoPlayerMove board =
     do
         let
             coordsList = [(rowIndices, columnIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
-            firstTry =  evaluateRecursivePatten board basicPattern coordsList 
-            secondTry =  evaluateRecursivePatten board basicPattern2 coordsList 
+            firstTry =  evaluateRecursivePatten board flagPatternMatch coordsList 
+            secondTry =  evaluateRecursivePatten board validUncoverPatternMatch coordsList 
             in
             if isJust firstTry
                 then return $ fromMaybe board firstTry
@@ -66,8 +66,9 @@ expandFirstUnexposed board (xy : xys) =
         then expandCells xy board
         else expandFirstUnexposed board xys
 
-basicPattern :: Board -> (Int, Int) -> Maybe Board
-basicPattern board (x, y) = 
+-- if the number of non-uncovered adjacent mines is equal to the cell number, they are all mines. If any are unflagged, flag ONE.
+flagPatternMatch :: Board -> (Int, Int) -> Maybe Board
+flagPatternMatch board (x, y) = 
     let 
         surroundingSquares = getSurroundingSquares board (x, y)
         numAdjacentUnexposed = length $ filter (== hidden) (map (getCellStatus board) surroundingSquares)
@@ -77,8 +78,9 @@ basicPattern board (x, y) =
         then Just $ flagAdjacentUnexposed board surroundingSquares
         else Nothing
 
-basicPattern2 :: Board -> (Int, Int) -> Maybe Board
-basicPattern2 board (x, y) =
+-- if the cell value is equal to the number of flagged adjacent cells, then we have flagged all adjacent mines. If there are any hidden adjacent cells, uncover ONE.
+validUncoverPatternMatch :: Board -> (Int, Int) -> Maybe Board
+validUncoverPatternMatch board (x, y) =
     let 
         surroundingSquares = getSurroundingSquares board (x, y)
         numAdjacentUnexposed = length $ filter (== hidden) (map (getCellStatus board) surroundingSquares)
