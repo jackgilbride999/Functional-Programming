@@ -17,7 +17,8 @@ module Board (
     hidden,
     uncoverClick,
     flagClick,
-    unsureClick
+    unsureClick,
+    isInBoard
 ) where
 import Data.Vector
 import System.Random
@@ -75,9 +76,9 @@ createEmptyBoard width height numMines = Board {
 }
 
 -- todo add checks to see if outside of board
-getCellValue :: (Int, Int) -> Board -> Proximity
-getCellValue (x,y) board = 
-    if isInBoard (x,y) board then
+getCellValue ::  Board -> (Int, Int) -> Proximity
+getCellValue board (x,y) = 
+    if isInBoard board (x,y) then
         cells board ! x ! y
     else
         -5
@@ -89,14 +90,14 @@ updateCellValue (x, y) board value =
         newCells = update (cells board) (singleton (x, newRows))    -- update the cells with the new row x
     in board {cells = newCells} -- update the board with the new cells
 
-isInBoard :: (Int, Int) -> Board -> Bool
-isInBoard (x, y) board = 
+isInBoard :: Board -> (Int, Int) -> Bool
+isInBoard board (x, y) = 
     x >= 0 && x < width board && y >= 0 && y < height board
 
 incrementCellValue :: (Int, Int) -> Board -> Board
 incrementCellValue coords board = 
-    if isInBoard coords board
-    then updateCellValue coords board $ getCellValue coords board + 1
+    if isInBoard board coords
+    then updateCellValue coords board $ getCellValue board coords + 1
     else board
 
 updateAdjacentCells :: (Int, Int) -> Board -> Board
@@ -104,7 +105,7 @@ updateAdjacentCells (x,y) board = incrementCells [(x-1, y-1), (x,y-1), (x+1, y-1
  where 
      incrementCells [] board = board
      incrementCells (head:tail) board = 
-         if getCellValue head board == mine 
+         if getCellValue board head == mine 
          then
             incrementCells tail board
          else
@@ -122,7 +123,7 @@ populateBoard board numMines coordsToSkip generator =
         (randomX, newGenerator) = randomR (0, width board-1) generator
         (randomY, newerGenerator) = randomR (0, height board-1) newGenerator
         in
-            if getCellValue (randomX, randomY) board == mine || (randomX, randomY) == coordsToSkip
+            if getCellValue board (randomX, randomY) == mine || (randomX, randomY) == coordsToSkip
                 then populateBoard board numMines coordsToSkip newerGenerator
                 else 
                     let plantedBoard = plantMine (randomX, randomY) board  
@@ -140,14 +141,14 @@ updateCellStatus (x, y) board status =
         newStatuses = update (statuses board) (singleton (x, newRows))    -- update the cells with the new row x
     in board {statuses = newStatuses} -- update the board with the new cells
 
-getCellStatus :: (Int, Int) -> Board -> CellStatus
-getCellStatus (x, y) board = statuses board ! x ! y
+getCellStatus :: Board -> (Int, Int) -> CellStatus
+getCellStatus board (x, y) = statuses board ! x ! y
 
 expandCells :: (Int, Int) -> Board -> Board
 expandCells (x, y) board =
-    if isInBoard (x, y) board && (getCellStatus (x, y) board == hidden || getCellStatus (x, y) board == questioned)
+    if isInBoard board (x, y) && (getCellStatus board (x, y) == hidden || getCellStatus board (x, y) == questioned)
     then 
-        if getCellValue (x, y) board == blank then
+        if getCellValue board (x, y) == blank then
             let updatedBoard = updateCellStatus (x, y) board visible
             in expandCells (x-1, y) $ expandCells (x, y-1) $ expandCells (x+1, y) $ expandCells (x, y+1) updatedBoard
         else updateCellStatus (x, y) board visible
@@ -161,27 +162,27 @@ updateGameState board =
 updateGameStateRecursive :: Board -> GameState -> [(Int, Int)] -> Board
 updateGameStateRecursive board state [] = board {state = state}
 updateGameStateRecursive board Incomplete (coords:coordsList) = 
-   if getCellStatus coords board == visible && getCellValue coords board == mine
+   if getCellStatus board coords == visible && getCellValue board coords == mine
     then board {state = lost}
     else updateGameStateRecursive board Incomplete coordsList
 updateGameStateRecursive board Won (coords:coordsList) 
-    | getCellStatus coords board == visible && getCellValue coords board == mine
+    | getCellStatus board coords == visible && getCellValue board coords == mine
         = board {state = lost}
-    | getCellStatus coords board /= visible && getCellValue coords board /= mine
+    | getCellStatus board coords /= visible && getCellValue board coords /= mine
         = updateGameStateRecursive board Incomplete coordsList
     | otherwise = 
         updateGameStateRecursive board Won coordsList
 
 uncoverClick :: Board -> (Int, Int) -> Board
 uncoverClick board (x, y) = 
-    let cellStatus = getCellStatus (x, y) board 
+    let cellStatus = getCellStatus board (x, y) 
     in if cellStatus == visible 
         then board
         else  expandCells (x, y) $ updateCellStatus (x, y) board hidden
 
 flagClick :: Board -> (Int, Int) -> Board
 flagClick board (x, y) = 
-    let cellStatus = getCellStatus (x, y) board
+    let cellStatus = getCellStatus board (x, y)
     in  if cellStatus == flagged
         then updateCellStatus (x, y) board hidden
         else if cellStatus == hidden || cellStatus == questioned
@@ -190,7 +191,7 @@ flagClick board (x, y) =
 
 unsureClick :: Board -> (Int, Int) -> Board
 unsureClick board (x, y) = 
-    let cellStatus = getCellStatus (x, y) board 
+    let cellStatus = getCellStatus board (x, y) 
     in  if cellStatus == questioned
         then updateCellStatus (x, y) board hidden
         else if cellStatus == hidden || cellStatus == flagged

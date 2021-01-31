@@ -44,8 +44,8 @@ drawCell canvas board cellWidth cellHeight (x, y) = do
         digitX = canvasX + cellWidth / 2
         canvasY = fromIntegral y * cellHeight
         digitY = canvasY + cellHeight * 0.75
-        cellValue = getCellValue (x, y) board
-        cellStatus = getCellStatus (x, y) board
+        cellValue = getCellValue board (x, y)
+        cellStatus = getCellStatus board (x, y)
         in
             if cellStatus == visible then
                 if cellValue == mine then
@@ -166,6 +166,28 @@ playGame window numRows numCols numMines = do
         boardValue <- liftIO $ readIORef board
         updatedBoard <- liftIO $ autoPlayerMove boardValue
         liftIO $ writeIORef board updatedBoard
+        boardValue <- liftIO $ readIORef board
+        updatedBoard <- liftIO $ return $ updateGameState boardValue
+        liftIO $ writeIORef board updatedBoard
+        clearCanvas canvas
+        boardValue <- liftIO $ readIORef board
+        if state boardValue == incomplete
+            then do
+                drawCells canvas boardValue (canvasHeight / numRows) (canvasWidth / numCols)
+                drawVerticalLines canvas (0, 0) (canvasHeight / numCols) numCols
+                drawHorizontalLines canvas (0, 0) (canvasWidth / numRows) numRows
+            else if state boardValue == won 
+                then do
+                    set' fillStyle (htmlColor "green") canvas
+                    fillRect (0,0) canvasHeight canvasWidth canvas
+                    set' fillStyle (htmlColor "white") canvas
+                    fillText "YOU WON" (0,0) canvas
+                else do
+                    set' fillStyle (htmlColor "red") canvas
+                    fillRect (0,0) canvasHeight canvasWidth canvas
+                    set' fillStyle (htmlColor "white") canvas
+                    fillText "YOU LOST" (0,0) canvas
+
 
     on mousemove canvas $ \xy -> do
         liftIO $ writeIORef pos xy
@@ -176,7 +198,7 @@ playGame window numRows numCols numMines = do
         boardValue <- liftIO $ readIORef board
         started <- liftIO $ readIORef gameStarted
         
-        when (not started && getCellValue coords boardValue == mine)
+        when (not started && getCellValue boardValue coords == mine)
                 (liftIO $ writeIORef board (initializeBoard (floor numRows) (floor numCols) numMines coords stdGen))
 
         liftIO $ writeIORef gameStarted True
