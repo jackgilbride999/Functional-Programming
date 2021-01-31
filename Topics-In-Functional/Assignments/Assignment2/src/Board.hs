@@ -52,19 +52,27 @@ data Board = Board {
 }
 
 -- A mine cell and a blank cell represented by a function name, more intuitive than a magic number
-mine = -1           :: Proximity
-blank = 0           :: Proximity
+mine, blank :: Proximity
+mine = -1
+blank = 0
 
 -- Functions to access data constructors of CellStatus and GameState, in case their underlying representation is changed later on.
-visible = Visible   :: CellStatus
-hidden = Hidden     :: CellStatus
-flagged = Flagged   :: CellStatus
-questioned = Questioned  :: CellStatus
+visible, hidden, flagged, questioned :: CellStatus
+visible = Visible
+hidden = Hidden 
+flagged = Flagged
+questioned = Questioned
 
-incomplete = Incomplete :: GameState
-won = Won :: GameState
-lost = Lost :: GameState
+incomplete, won, lost :: GameState
+incomplete = Incomplete
+won = Won 
+lost = Lost 
 
+isInBoard :: Board -> (Int, Int) -> Bool
+isInBoard board (x, y) = 
+    x >= 0 && x < width board && y >= 0 && y < height board
+
+-- create a board with the given properties, where every cell is blank and hidden
 createEmptyBoard :: Int -> Int -> Int -> Board
 createEmptyBoard width height numMines = Board {
     cells = generate width (\_ -> Data.Vector.replicate height blank),
@@ -74,6 +82,16 @@ createEmptyBoard width height numMines = Board {
     numMines = numMines,
     state = incomplete
 }
+
+getCellStatus :: Board -> (Int, Int) -> CellStatus
+getCellStatus board (x, y) = statuses board ! x ! y
+
+updateCellStatus :: (Int, Int) -> Board -> CellStatus -> Board
+updateCellStatus (x, y) board status = 
+    let 
+        newRows = update (statuses board ! x) (singleton (y, status))   -- update row x with the value
+        newStatuses = update (statuses board) (singleton (x, newRows))  -- update the cells with the new row x
+    in board {statuses = newStatuses}                                   -- update the board with the new cells
 
 getCellValue ::  Board -> (Int, Int) -> Proximity
 getCellValue board (x,y) = 
@@ -85,13 +103,9 @@ getCellValue board (x,y) =
 updateCellValue :: (Int, Int) -> Board -> Proximity -> Board
 updateCellValue (x, y) board value = 
     let 
-        newRows = update (cells board ! x) (singleton (y, value)) -- update row x with the value
+        newRows = update (cells board ! x) (singleton (y, value))   -- update row x with the value
         newCells = update (cells board) (singleton (x, newRows))    -- update the cells with the new row x
-    in board {cells = newCells} -- update the board with the new cells
-
-isInBoard :: Board -> (Int, Int) -> Bool
-isInBoard board (x, y) = 
-    x >= 0 && x < width board && y >= 0 && y < height board
+    in board {cells = newCells}                                     -- update the board with the new cells
 
 incrementCellValue :: (Int, Int) -> Board -> Board
 incrementCellValue coords board = 
@@ -99,6 +113,7 @@ incrementCellValue coords board =
     then updateCellValue coords board $ getCellValue board coords + 1
     else board
 
+-- increment the value of every cell that is adjacent to (x, y) and isn't a mine
 updateAdjacentCells :: (Int, Int) -> Board -> Board
 updateAdjacentCells (x,y) board = incrementCells [(x-1, y-1), (x,y-1), (x+1, y-1), (x-1, y), (x+1, y), (x-1, y+1), (x,y+1), (x+1, y+1)] board
  where 
@@ -110,11 +125,16 @@ updateAdjacentCells (x,y) board = incrementCells [(x-1, y-1), (x,y-1), (x+1, y-1
          else
             incrementCellValue head $ incrementCells tail board
 
+
 plantMine :: (Int, Int) -> Board -> Board
 plantMine coords board = 
     let boardWithMinePlanted = updateCellValue coords board mine -- plant a mine at the coords
     in updateAdjacentCells coords boardWithMinePlanted           -- update adjecent cells
 
+-- take a board and a number of mines
+-- randomly generate an index and place a mine there, unless:
+--  there is already a mine there
+--  the index is the supplied index where mines are not allowed (the first click of the game)
 populateBoard :: Board -> Int -> (Int, Int) -> StdGen -> Board
 populateBoard board 0 _ _ = board
 populateBoard board numMines coordsToSkip generator =
@@ -128,21 +148,14 @@ populateBoard board numMines coordsToSkip generator =
                     let plantedBoard = plantMine (randomX, randomY) board  
                     in populateBoard plantedBoard (numMines-1) coordsToSkip newerGenerator
 
+-- create an empty board with the given properties, then populate it
 initializeBoard :: Int -> Int -> Int -> (Int, Int) -> StdGen -> Board
 initializeBoard width height numMines coordsToSkip stdGen = 
     let emptyBoard = createEmptyBoard width height numMines
     in populateBoard emptyBoard numMines coordsToSkip stdGen 
 
-updateCellStatus :: (Int, Int) -> Board -> CellStatus -> Board
-updateCellStatus (x, y) board status = 
-    let 
-        newRows = update (statuses board ! x) (singleton (y, status)) -- update row x with the value
-        newStatuses = update (statuses board) (singleton (x, newRows))    -- update the cells with the new row x
-    in board {statuses = newStatuses} -- update the board with the new cells
-
-getCellStatus :: Board -> (Int, Int) -> CellStatus
-getCellStatus board (x, y) = statuses board ! x ! y
-
+-- uncover a cell that is hidden or questioned
+-- if the cell value is 0, uncover all adjacent cells
 expandCells :: (Int, Int) -> Board -> Board
 expandCells (x, y) board =
     if isInBoard board (x, y) && (getCellStatus board (x, y) == hidden || getCellStatus board (x, y) == questioned)
@@ -153,25 +166,31 @@ expandCells (x, y) board =
         else updateCellStatus (x, y) board visible
     else board
 
+-- take a board and check if the user has won or lost, updating the game state if so
 updateGameState :: Board -> Board
 updateGameState board = 
     let coordsList = [(columnIndices, rowIndices) | columnIndices <- [0 .. Board.width board - 1], rowIndices <- [0 .. Board.height board - 1]]
     in updateGameStateRecursive board won coordsList
 
+-- iterate through the board to check the game state
 updateGameStateRecursive :: Board -> GameState -> [(Int, Int)] -> Board
 updateGameStateRecursive board state [] = board {state = state}
-updateGameStateRecursive board Incomplete (coords:coordsList) = 
-   if getCellStatus board coords == visible && getCellValue board coords == mine
-    then board {state = lost}
-    else updateGameStateRecursive board Incomplete coordsList
-updateGameStateRecursive board Won (coords:coordsList) 
-    | getCellStatus board coords == visible && getCellValue board coords == mine
+
+updateGameStateRecursive board Won (coords:coordsList)                              -- Assuming the game has been Won, until proven otherwise:
+    | getCellStatus board coords == visible && getCellValue board coords == mine    --      If we reach an uncovered mine, game over. The game is lost
         = board {state = lost}
-    | getCellStatus board coords /= visible && getCellValue board coords /= mine
+    | getCellStatus board coords /= visible && getCellValue board coords /= mine    --      If we reach an uncovered non-mine, we know the game is incomplete. We carry this knowledge until the end of the recursion, in case we reach the "Lost" condition.
         = updateGameStateRecursive board Incomplete coordsList
     | otherwise = 
-        updateGameStateRecursive board Won coordsList
+        updateGameStateRecursive board Won coordsList                               --      We have not encountered a condition for "Lost" or "Incomplete", so assume we have Won and continue until proven otherwise.
 
+updateGameStateRecursive board Incomplete (coords:coordsList) =                     --  Knowing that the game is incomplete:
+   if getCellStatus board coords == visible && getCellValue board coords == mine    --      If we reach an uncovered mine, game over. The game is lost
+    then board {state = lost}
+    else updateGameStateRecursive board Incomplete coordsList                       --      We have not encountered a condition for "Lost". Continue the recursion in case we encounter it later.
+
+
+-- Three high level functions to handle the click of a cell depending on the mouse mode:
 uncoverClick :: Board -> (Int, Int) -> Board
 uncoverClick board (x, y) = 
     let cellStatus = getCellStatus board (x, y) 

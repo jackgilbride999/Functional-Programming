@@ -21,15 +21,8 @@ autoPlayerMove board =
                     then return $ fromMaybe board secondTry
                     else do
                         randomMove board <$> newStdGen
-                
-evaluateRecursivePatten :: Board -> (Board -> (Int, Int) -> Maybe Board )->[(Int, Int)] -> Maybe Board
-evaluateRecursivePatten _ _ [] = Nothing
-evaluateRecursivePatten board f (xy : xys) = 
-    let calculation = f board xy in 
-    if isJust calculation 
-    then calculation
-    else evaluateRecursivePatten board f xys
 
+-- uncover a completely random cell. If the cellStatus is not hidden, then try again              
 randomMove :: Board -> StdGen -> Board 
 randomMove board stdGen = 
         let
@@ -41,17 +34,37 @@ randomMove board stdGen =
             then expandCells (randomX, randomY) board
             else randomMove board newerGenerator
 
+-- take a list, and evaluate a function that returns a Maybe Board on its first argument.
+-- if the function result is a Just, return the Just. If it is a Nothing, continue the recursion.
+evaluateRecursivePatten :: Board -> (Board -> (Int, Int) -> Maybe Board )->[(Int, Int)] -> Maybe Board
+evaluateRecursivePatten _ _ [] = Nothing
+evaluateRecursivePatten board f (xy : xys) = 
+    let functionResult = f board xy in 
+    if isJust functionResult 
+    then functionResult
+    else evaluateRecursivePatten board f xys
+
+-- get the coordinates of all of the valid cells adjacent to (x, y)
 getSurroundingSquares :: Board -> (Int, Int) -> [(Int, Int)]
 getSurroundingSquares board (x, y) = 
     let unfiltered = [(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y), (x+1, y), (x-1, y+1), (x, y+1), (x+1, y+1)]
     in filter (isInBoard board) unfiltered
 
+-- take a list of cells, and update the first "hidden" one to "flagged"
 flagAdjacentUnexposed :: Board -> [(Int, Int)] -> Board
 flagAdjacentUnexposed board [] = board
 flagAdjacentUnexposed board (xy : xys) = 
     if getCellStatus board xy == hidden
         then updateCellStatus xy board flagged
         else flagAdjacentUnexposed board xys
+
+-- take a list of cells, and expand the first "hidden" one
+expandFirstUnexposed :: Board -> [(Int, Int)] -> Board
+expandFirstUnexposed board [] = board
+expandFirstUnexposed board (xy : xys) = 
+    if getCellStatus board xy == hidden
+        then expandCells xy board
+        else expandFirstUnexposed board xys
 
 basicPattern :: Board -> (Int, Int) -> Maybe Board
 basicPattern board (x, y) = 
@@ -75,10 +88,3 @@ basicPattern2 board (x, y) =
         if getCellStatus board (x,y) == visible && numAdjacentFlags == numAdjacentMines && numAdjacentUnexposed > 0
         then Just $ expandFirstUnexposed board surroundingSquares
         else Nothing 
-
-expandFirstUnexposed :: Board -> [(Int, Int)] -> Board
-expandFirstUnexposed board [] = board
-expandFirstUnexposed board (xy : xys) = 
-    if getCellStatus board xy == hidden
-        then expandCells xy board
-        else expandFirstUnexposed board xys
