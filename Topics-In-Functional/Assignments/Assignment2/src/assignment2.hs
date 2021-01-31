@@ -6,7 +6,6 @@ import System.Random
 import Control.Monad
 
 data Modes = Mine | Flag | Unsure
-data Difficulties = Beginner | Intermediate | Expert
 
 main :: IO () 
 main = do
