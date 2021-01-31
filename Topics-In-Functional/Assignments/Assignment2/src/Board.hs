@@ -75,7 +75,6 @@ createEmptyBoard width height numMines = Board {
     state = incomplete
 }
 
--- todo add checks to see if outside of board
 getCellValue ::  Board -> (Int, Int) -> Proximity
 getCellValue board (x,y) = 
     if isInBoard board (x,y) then
