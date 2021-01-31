@@ -30,8 +30,6 @@ evaluateRecursivePatten board f (xy : xys) =
     then calculation
     else evaluateRecursivePatten board f xys
 
-
-
 randomMove :: Board -> StdGen -> Board 
 randomMove board stdGen = 
         let
@@ -70,9 +68,17 @@ basicPattern2 :: Board -> (Int, Int) -> Maybe Board
 basicPattern2 board (x, y) =
     let 
         surroundingSquares = getSurroundingSquares board (x, y)
-        numAdjacentExposed = length $ filter (== visible) (map (getCellStatus board) surroundingSquares)
+        numAdjacentUnexposed = length $ filter (== hidden) (map (getCellStatus board) surroundingSquares)
         numAdjacentFlags = length $ filter (== flagged ) (map (getCellStatus board) surroundingSquares)
+        numAdjacentMines = getCellValue board (x, y)
     in 
-        if getCellStatus board (x,y) == hidden && numAdjacentExposed + numAdjacentFlags == length surroundingSquares
-        then Just $ expandCells (x, y) board
+        if getCellStatus board (x,y) == visible && numAdjacentFlags == numAdjacentMines && numAdjacentUnexposed > 0
+        then Just $ expandFirstUnexposed board surroundingSquares
         else Nothing 
+
+expandFirstUnexposed :: Board -> [(Int, Int)] -> Board
+expandFirstUnexposed board [] = board
+expandFirstUnexposed board (xy : xys) = 
+    if getCellStatus board xy == hidden
+        then expandCells xy board
+        else expandFirstUnexposed board xys
