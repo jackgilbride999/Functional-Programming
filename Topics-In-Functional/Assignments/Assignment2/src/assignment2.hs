@@ -125,6 +125,13 @@ setup window = do
 playGame :: Window -> Double -> Double  -> Int -> UI ()
 playGame window numRows numCols numMines = do
 
+    mineButton <- button #+ [string "Mine"]
+    flagButton <- button #+ [string "Flag"] 
+    unsureButton <- button #+ [string "Unsure"] 
+    autoPlayButton <- button #+ [string "AutoPlay"] # set style [("border", "solid black 1px")]
+
+    updateButtonStyles mineButton flagButton unsureButton
+
     canvas <- canvas
         # set Graphics.UI.Threepenny.height (floor canvasHeight)
         # set Graphics.UI.Threepenny.width (floor canvasWidth)
@@ -137,25 +144,23 @@ playGame window numRows numCols numMines = do
     pos <- liftIO $ newIORef (0, 0)
     gameStarted <- liftIO $ newIORef False
 
-    mineButton <- button #+ [string "Mine"]
-    flagButton <- button #+ [string "Flag"]
-    unsureButton <- button #+ [string "Unsure"]
-    autoPlayButton <- button #+ [string "AutoPlay"]
-
     drawVerticalLines canvas (0, 0) (canvasWidth / numCols) numCols
     drawHorizontalLines canvas (0, 0) (canvasHeight / numRows) numRows
 
     getBody window #+
-        [column [element canvas], element mineButton, element flagButton, element unsureButton, element autoPlayButton]
+        [element mineButton, element flagButton, element unsureButton, element autoPlayButton, column [element canvas]]
 
     on click mineButton $ \_ -> do
         liftIO $ writeIORef mode Mine
+        updateButtonStyles mineButton flagButton unsureButton
 
     on click flagButton $ \_ -> do
         liftIO $ writeIORef mode Flag
+        updateButtonStyles flagButton mineButton unsureButton
 
     on click unsureButton $ \_ -> do
         liftIO $ writeIORef mode Unsure
+        updateButtonStyles unsureButton mineButton flagButton
 
     on click autoPlayButton $ \_ -> do
         boardValue <- liftIO $ readIORef board
@@ -205,3 +210,9 @@ playGame window numRows numCols numMines = do
                     fillRect (0,0) canvasHeight canvasWidth canvas
                     set' fillStyle (htmlColor "white") canvas
                     fillText "YOU LOST" (0,0) canvas
+
+updateButtonStyles :: Element -> Element -> Element -> UI ()
+updateButtonStyles button1 button2 button3 = do
+    set' style [("border", "solid black 2px"), ("font-weight", "bold")] button1
+    set' style [("border", "solid black 1px"), ("font-weight", "normal")] button2
+    set' style [("border", "solid black 1px"), ("font-weight", "normal")] button3
