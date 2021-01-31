@@ -14,7 +14,10 @@ module Board (
     won,
     lost,
     updateGameState,
-    hidden
+    hidden,
+    uncoverClick,
+    flagClick,
+    unsureClick
 ) where
 import Data.Vector
 import System.Random
@@ -168,4 +171,28 @@ updateGameStateRecursive board Won (coords:coordsList)
         = updateGameStateRecursive board Incomplete coordsList
     | otherwise = 
         updateGameStateRecursive board Won coordsList
-   
+
+uncoverClick :: Board -> (Int, Int) -> Board
+uncoverClick board (x, y) = 
+    let cellStatus = getCellStatus (x, y) board 
+    in if cellStatus == visible 
+        then board
+        else  expandCells (x, y) $ updateCellStatus (x, y) board hidden
+
+flagClick :: Board -> (Int, Int) -> Board
+flagClick board (x, y) = 
+    let cellStatus = getCellStatus (x, y) board
+    in  if cellStatus == flagged
+        then updateCellStatus (x, y) board hidden
+        else if cellStatus == hidden || cellStatus == questioned
+            then updateCellStatus (x, y) board flagged
+            else board
+
+unsureClick :: Board -> (Int, Int) -> Board
+unsureClick board (x, y) = 
+    let cellStatus = getCellStatus (x, y) board 
+    in  if cellStatus == questioned
+        then updateCellStatus (x, y) board hidden
+        else if cellStatus == hidden || cellStatus == flagged
+            then updateCellStatus (x, y) board questioned
+            else board

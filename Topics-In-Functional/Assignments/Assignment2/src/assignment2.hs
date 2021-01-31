@@ -93,9 +93,9 @@ drawUnsure canvas topLeftCoords centerCoords cellWidth cellHeight = do
     set' fillStyle (htmlColor "white") canvas
     fillText "?" centerCoords canvas
 
-detectClickedCell :: Point -> Int -> IO (Int, Int)
-detectClickedCell (x,y) cellSize = return (floor (x / fromIntegral cellSize),
-                                        floor (y / fromIntegral cellSize))
+detectClickedCell :: Point -> Double -> IO (Int, Int)
+detectClickedCell (x,y) cellSize = return (floor (x / cellSize),
+                                        floor (y / cellSize))
 
 canvasWidth = 500 :: Double
 canvasHeight = 500 :: Double
@@ -172,7 +172,7 @@ playGame window numRows numCols numMines = do
 
     on click canvas $ \_ -> do
         (x, y) <- liftIO $ readIORef pos
-        coords <- liftIO $ detectClickedCell (x, y) (floor canvasHeight `Prelude.div` floor numRows) 
+        coords <- liftIO $ detectClickedCell (x, y) (canvasHeight / numRows) 
         boardValue <- liftIO $ readIORef board
         started <- liftIO $ readIORef gameStarted
         
@@ -184,14 +184,11 @@ playGame window numRows numCols numMines = do
         boardValue <- liftIO $ readIORef board
         case m of
             Mine -> do
-                liftIO $ writeIORef board (updateGameState (expandCells coords boardValue))
-                return ()
+                liftIO $ writeIORef board (updateGameState (uncoverClick boardValue coords))
             Flag -> do
-                liftIO $ writeIORef board (updateCellStatus coords boardValue flagged)
-                return ()
+                liftIO $ writeIORef board (flagClick boardValue coords)
             Unsure -> do
-                liftIO $ writeIORef board (updateCellStatus coords boardValue questioned)
-                return ()                
+                liftIO $ writeIORef board (unsureClick boardValue coords)
         clearCanvas canvas
         boardValue <- liftIO $ readIORef board
         if state boardValue == incomplete
