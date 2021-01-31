@@ -216,26 +216,9 @@ playGame window numRows numCols numMines = do
             Unsure -> do
                 liftIO $ writeIORef board (unsureClick boardValue coords)
 
-        -- clear the canvas and depending on the state, either redraw, display a success message or display a failure message
-        clearCanvas canvas
         boardValue <- liftIO $ readIORef board
-        if state boardValue == incomplete
-            then do
-                drawCells canvas boardValue (canvasHeight / numRows) (canvasWidth / numCols)
-                drawVerticalLines canvas (0, 0) (canvasHeight / numCols) numCols
-                drawHorizontalLines canvas (0, 0) (canvasWidth / numRows) numRows
-            else if state boardValue == won 
-                then do
-                    set' fillStyle (htmlColor "green") canvas
-                    fillRect (0,0) canvasHeight canvasWidth canvas
-                    set' fillStyle (htmlColor "white") canvas
-                    fillText "YOU WON" (0,0) canvas
-                else do
-                    set' fillStyle (htmlColor "red") canvas
-                    fillRect (0,0) canvasHeight canvasWidth canvas
-                    set' fillStyle (htmlColor "white") canvas
-                    fillText "YOU LOST" (0,0) canvas
-    
+        drawCanvas canvas boardValue numRows numCols
+
      -- when the autoplay button is clicked, let the autoplayer update the board, and draw the updated board
     on click autoPlayButton $ \_ -> do
         boardValue <- liftIO $ readIORef board
@@ -244,8 +227,14 @@ playGame window numRows numCols numMines = do
         boardValue <- liftIO $ readIORef board
         updatedBoard <- liftIO $ return $ updateGameState boardValue
         liftIO $ writeIORef board updatedBoard
-        clearCanvas canvas
         boardValue <- liftIO $ readIORef board
+        drawCanvas canvas boardValue numRows numCols
+
+-- clear the canvas and depending on the state, either redraw, display a success message or display a failure message
+drawCanvas :: Element -> Board -> Double -> Double -> UI ()
+drawCanvas canvas boardValue numRows numCols =
+    do
+        clearCanvas canvas
         if state boardValue == incomplete
             then do
                 drawCells canvas boardValue (canvasHeight / numRows) (canvasWidth / numCols)
@@ -262,3 +251,4 @@ playGame window numRows numCols numMines = do
                     fillRect (0,0) canvasHeight canvasWidth canvas
                     set' fillStyle (htmlColor "white") canvas
                     fillText "YOU LOST" (0,0) canvas
+        return()

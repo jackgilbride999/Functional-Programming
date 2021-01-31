@@ -1,24 +1,14 @@
 module Board (
-    Board (..),
-    CellStatus (..),
-    visible,
-    flagged,
-    getCellValue, 
+    Board (..), CellStatus (..),
+    visible, flagged, hidden, questioned,
+    isInBoard,
     initializeBoard,
-    updateCellStatus,
-    getCellStatus,
+    getCellValue, getCellStatus, updateCellStatus,
     expandCells,
     mine,
-    questioned,
-    incomplete,
-    won,
-    lost,
+    incomplete, won, lost,
     updateGameState,
-    hidden,
-    uncoverClick,
-    flagClick,
-    unsureClick,
-    isInBoard
+    uncoverClick, flagClick, unsureClick,
 ) where
 import Data.Vector
 import System.Random
